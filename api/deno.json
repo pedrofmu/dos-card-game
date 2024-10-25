@@ -1,0 +1,11 @@
+{
+  "tasks": {
+    "dev": "deno serve --watch -R main.ts"
+  },
+  "imports": {
+    "@oak/oak": "jsr:@oak/oak@^17.1.1",
+    "@std/assert": "jsr:@std/assert",
+    "@std/http": "jsr:@std/http",
+    "@std/path": "jsr:@std/path@^1.0.6"
+  }
+}
