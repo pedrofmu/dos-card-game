@@ -1,6 +1,65 @@
 /* CSS HEX */
---jet: #353535ff;
---caribbean-current: #3c6e71ff;
---white: #ffffffff;
---platinum: #d9d9d9ff;
---indigo-dye: #284b63ff;
+:root {
+    /* background */
+    --jet: #353535ff;
+    /* interactive items */
+    --caribbean-current: #3c6e71ff;
+    /* text */
+    --platinum: #d9d9d9ff;
+
+    /* resaltar cosas */
+    --indigo-dye: #284b63ff;
+    --white: #ffffffff;
+}
+
+article,
+nav,
+header,
+footer,
+main {
+    display: block;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--jet);
+    font-family: "Open Sans", sans-serif;
+}
+
+/*--- TOP BAR ---*/
+
+header {
+    padding: 25px;
+    padding-top: 15px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+nav {
+    display: flex;
+    gap: 75px; 
+}
+
+.home_link {
+    text-decoration: none;
+    color: var(--platinum);
+    font-size: 30px;
+    font-weight: 900;
+
+}
+
+.page_link {
+    text-decoration: none;
+    color: var(--caribbean-current);
+    font-size: 25px;
+    font-weight: 900;
+}
+
+.page_link:hover{
+    text-decoration: underline;
+}
