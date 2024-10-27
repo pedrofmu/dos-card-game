@@ -4,7 +4,7 @@ import { Router } from "@oak/oak";
 const router = new Router();
 
 // Definir la ruta POST
-router.post("/mensaje", async (context) => {
+router.post("/test", async (context) => {
     const body: string = await context.request.body.json();
 
     console.log("Mensaje recibido:", body);
@@ -13,7 +13,7 @@ router.post("/mensaje", async (context) => {
     context.response.body = { mensaje: "Mensaje recibido con éxito" };
 });
 
-router.get("/", async (context) => {
+router.post("/", async (context) => {
     const body: string = await context.request.body.text();
 
     console.log("Mensaje recibido:", body);
