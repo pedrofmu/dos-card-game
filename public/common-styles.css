@@ -12,20 +12,18 @@
     --white: #ffffffff;
 }
 
-article,
-nav,
-header,
-footer,
-main {
-    display: block;
-}
-
 * {
     margin: 0;
     padding: 0;
 }
 
+html {
+    height: 100%;
+}
+
 body {
+    height: 100%;
+    min-height: 100%;
     background-color: var(--jet);
     font-family: "Open Sans", sans-serif;
 }
@@ -42,7 +40,7 @@ header {
 
 nav {
     display: flex;
-    gap: 75px; 
+    gap: 75px;
 }
 
 .home_link {
@@ -50,7 +48,6 @@ nav {
     color: var(--platinum);
     font-size: 30px;
     font-weight: 900;
-
 }
 
 .page_link {
@@ -60,6 +57,6 @@ nav {
     font-weight: 900;
 }
 
-.page_link:hover{
+.page_link:hover {
     text-decoration: underline;
 }
