@@ -4,13 +4,16 @@ import { Router } from "@oak/oak";
 const router = new Router();
 
 // Definir la ruta POST
-router.post("/test", async (context) => {
-    const body: string = await context.request.body.json();
+router.post("/contact_form", async (ctx) => {
+    const body = await ctx.request.body.formData();
 
-    console.log("Mensaje recibido:", body);
+    const name = body.get("name");
+    const email = body.get("email");
+    const message = body.get("message");
 
-    context.response.status = 200;
-    context.response.body = { mensaje: "Mensaje recibido con éxito" };
+    console.log("datos: ", {name, email, message});
+
+    ctx.response.redirect("/enviar_sugerencias/enviar_sugerencias.html");
 });
 
 router.post("/", async (context) => {

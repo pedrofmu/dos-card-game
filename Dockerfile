@@ -13,4 +13,3 @@ COPY ./apache-virtual-host.conf /usr/local/apache2/conf/sites/apache-virtual-hos
 EXPOSE 80
 
 CMD ["httpd", "-D", "FOREGROUND"]
-

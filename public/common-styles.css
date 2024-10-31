@@ -4,6 +4,7 @@
     --jet: #353535ff;
     /* interactive items */
     --caribbean-current: #3c6e71ff;
+    --resalted-caribbean: #713c6e;
     /* text */
     --platinum: #d9d9d9ff;
 
@@ -55,8 +56,14 @@ nav {
     color: var(--caribbean-current);
     font-size: 25px;
     font-weight: 900;
+    transition: color 0.15s ease, text-decoration 0.15s ease;
 }
 
 .page_link:hover {
     text-decoration: underline;
+    color: var(--indigo-dye);
+}
+
+.this_page_link {
+    color: var(--indigo-dye);
 }

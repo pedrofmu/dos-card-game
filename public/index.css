@@ -62,7 +62,8 @@ main {
     align-items: center;
     border-style: solid;
     border-radius: 30px;
-    border-color: var(--caribbean-current);
+    border-color: var(--indigo-dye); 
+    transition: background-color 0.3s;
 }
 
 
@@ -74,9 +75,5 @@ main {
 }
 
 .play_btn:hover {
-    border-color: var(--platinum);
-
-    a {
-        text-decoration: underline;
-    }
+    background-color: var(--indigo-dye);
 }

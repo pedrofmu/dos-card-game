@@ -16,13 +16,17 @@
         <nav>
             <a href="/" class="page_link">Inicio</a>
             <a href="/reglas/reglas.html" class="page_link">Reglas</a>
-            <a href="/enviar_sugerencias/enviar_sugerencias.html"# class="page_link">Historial</a>
-            <a href="#" class="page_link">Enviar sugerencias</a>
+            <a href="/enviar_sugerencias/enviar_sugerencias.html" # class="page_link">Historial</a>
+            <a href="#" class="page_link this_page_link">Enviar sugerencias</a>
         </nav>
     </header>
-
     <main>
-
+        <form method="post" action="/api/contact_form">
+            <input name="name" type="text" class="feedback-input" placeholder="Name" />
+            <input name="email" type="text" class="feedback-input" placeholder="Email" />
+            <textarea name="message" class="feedback-input" placeholder="Comment"></textarea>
+            <input type="submit" value="SUBMIT" />
+        </form>
     </main>
 </body>
 
