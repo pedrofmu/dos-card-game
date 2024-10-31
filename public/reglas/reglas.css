@@ -1,0 +1,56 @@
+main {
+    width: 100%;
+    height: 80%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+}
+
+.left_main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+}
+
+.left_main>span {
+    width: 75%;
+    color: var(--platinum);
+    font-size: 17px;
+    font-weight: 700;
+    margin-top: 20px;
+}
+
+.left_main>span::before {
+    content: "• ";
+    left: 0;
+}
+
+.right_main {
+    width: 50%;
+    position: relative;
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+}
+
+.card {
+    width: 225px; 
+    transition: transform 0.3s;
+    position: absolute;
+}
+
+.card1 {
+    transform: rotate(-15deg);
+    top: 200px; 
+    left: 190px;
+    z-index: 2;
+}
+
+.card2 {
+    transform: rotate(15deg);
+    top: 110px; 
+    left: 340px;  
+    z-index: 1;
+}
