@@ -36,7 +36,7 @@ main {
 }
 
 .left_main>p {
-    width: 100%;
+    max-width: 75%;
     color: var(--platinum);
     font-size: 30px;
     font-weight: 700;
@@ -67,7 +67,7 @@ main {
 }
 
 
-.play_btn>a {
+.play_btn>label {
     color: var(--platinum);
     text-decoration: none;
     font-size: 25px;

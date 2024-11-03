@@ -43,14 +43,14 @@ main {
 
 .card1 {
     transform: rotate(-15deg);
-    top: 200px; 
+    top: 220px; 
     left: 190px;
     z-index: 2;
 }
 
 .card2 {
     transform: rotate(15deg);
-    top: 110px; 
+    top: 130px; 
     left: 340px;  
     z-index: 1;
 }
