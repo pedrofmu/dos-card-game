@@ -1,4 +1,5 @@
 import { Router } from "@oak/oak";
+import { manageForm } from "./manageForm.ts";
 
 // Crear una nueva instancia del Router
 const router = new Router();
@@ -7,11 +8,7 @@ const router = new Router();
 router.post("/contact_form", async (ctx) => {
     const body = await ctx.request.body.formData();
 
-    const name = body.get("name");
-    const email = body.get("email");
-    const message = body.get("message");
-
-    console.log("datos: ", { name, email, message });
+    manageForm(body);
 
     ctx.response.redirect("/enviar_sugerencias/enviar_sugerencias.html");
 });
@@ -32,6 +29,7 @@ router.get("/ws", (ctx) => {
         ws.send(m.data as string);
         ws.close();
     };
+
     ws.onclose = () => console.log("Disconncted from client");
 });
 
