@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "dev": "deno serve --watch -R main.ts"
+    "dev": "deno serve --watch -R src/main.ts"
   },
   "imports": {
     "@oak/oak": "jsr:@oak/oak@^17.1.1",
