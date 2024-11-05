@@ -1,5 +1,6 @@
 import { Router } from "@oak/oak";
 import { manageForm } from "./manageForm.ts";
+import { onConnectionWS } from "./game.ts";
 
 // Crear una nueva instancia del Router
 const router = new Router();
@@ -17,20 +18,9 @@ router.get("/ws", (ctx) => {
     if (!ctx.isUpgradable) {
         ctx.throw(501);
     }
-    const ws = ctx.upgrade();
-
-    ws.onopen = () => {
-        console.log("Connected to client");
-        ws.send("Hello from server!");
-    };
-
-    ws.onmessage = (m) => {
-        console.log("Got message from client: ", m.data);
-        ws.send(m.data as string);
-        ws.close();
-    };
-
-    ws.onclose = () => console.log("Disconncted from client");
+    const ws: WebSocket = ctx.upgrade();
+    
+    onConnectionWS(ws);
 });
 
 router.post("/", async (context) => {
