@@ -4,7 +4,6 @@
     --jet: #353535ff;
     /* interactive items */
     --caribbean-current: #3c6e71ff;
-    --resalted-caribbean: #713c6e;
     /* text */
     --platinum: #d9d9d9ff;
 
@@ -45,10 +44,21 @@ nav {
 }
 
 .home_link {
+    display: flex;
+    gap: 15px;
+}
+
+.home_link>h1{
     text-decoration: none;
     color: var(--platinum);
     font-size: 30px;
     font-weight: 900;
+
+}
+
+.home_link>img{
+    width: 25px;
+    transform: rotate(15deg); 
 }
 
 .page_link {
@@ -60,7 +70,7 @@ nav {
 }
 
 .page_link:hover {
-    text-decoration: underline;
+    text-decoration: underline;    
     color: var(--indigo-dye);
 }
 

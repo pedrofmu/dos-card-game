@@ -7,9 +7,27 @@ footer {
     align-items: center;
 }
 
-.footer_icon>img {
+.footer_icon {
     width: 50px;
+    height: 50px;
+    background-image: url('./images/meIcon.png'); /* Imagen inicial */
+    background-size: cover;
+    transition: filter 0.3s ease-in-out;
 }
+
+.footer_icon:hover {
+    background-image: url('./images/meIconHover.png'); /* Imagen en hover */
+}
+/* Animación */
+@keyframes change-image {
+    0%, 50% {
+        background-image: url('./images/meIcon.png'); /* Imagen inicial */
+    }
+    50.1%, 100% {
+        background-image: url('./images/meIconHover.png'); /* Imagen final */
+    }
+}
+
 
 /* MAIN */
 main {
@@ -21,24 +39,24 @@ main {
 }
 
 .left_main {
-    padding-top: 130px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     row-gap: 75px;
     width: 50%;
 }
 
-.left_main>h1 {
+.left_main>h2 {
     color: var(--platinum);
-    font-size: 55px;
-    font-weight: 800;
+    font-size: 60px;
+    font-weight: 900;
 }
 
 .left_main>p {
     max-width: 75%;
     color: var(--platinum);
-    font-size: 30px;
+    font-size: 35px;
     font-weight: 700;
     text-align: center;
 }
@@ -55,15 +73,14 @@ main {
 
 .play_btn {
     background-color: var(--caribbean-current);
-    width: 275px;
-    height: 110px;
+    width: 290px;
+    height: 115px;
     display: flex;
     justify-content: center;
     align-items: center;
-    border-style: solid;
     border-radius: 30px;
-    border-color: var(--indigo-dye); 
-    transition: background-color 0.3s;
+    transition: background-color 0.2s;
+    transition: box-shadow 0.2s;
 }
 
 
@@ -76,4 +93,5 @@ main {
 
 .play_btn:hover {
     background-color: var(--indigo-dye);
+    box-shadow: 5px 5px var(--white);
 }
