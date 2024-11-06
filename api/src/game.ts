@@ -1,6 +1,6 @@
 interface Timeout {
     id: number;
-    s: number;
+    seconds: number;
 }
 
 interface Player {
@@ -15,46 +15,39 @@ interface Room {
     reverse: number;
     turn: number;
     cardOnBoard: number;
-    people: number;
+    conectedPlayers: number;
     players: Player[];
+    isPlaying: boolean;
 }
 
-interface Data {
+interface roomDictionary {
     [key: string]: Room;
 }
 
 const NUM_ROOMS = 5;
 const MAX_PEOPLE = 10;
 
-let deck: number[];
-let data: Data;
+let allRooms: roomDictionary;
 const clients: Record<string, WebSocket> = {};
 export function initialiceGameData() {
-    deck = Array.from({ length: 112 }, (_, i) => i);
-
-    //Quitar los valores de las cartas vacias
-    deck.splice(56, 1);
-    deck.splice(69, 1);
-    deck.splice(82, 1);
-    deck.splice(95, 1);
-
-    data = {};
+    allRooms = {};
 
     for (let i = 1; i <= NUM_ROOMS; i++) {
         const room: Room = {
-            timeout: { id: 0, s: 10 },
+            timeout: { id: 0, seconds: 10 },
             deck: [],
             reverse: 0,
             turn: 0,
             cardOnBoard: 0,
-            people: 0,
+            conectedPlayers: 0,
             players: [],
+            isPlaying: false,
         };
 
         // Populate players array
         for (let j = 0; j < MAX_PEOPLE; j++) {
             const player: Player = {
-                id: '',
+                id: "",
                 name: "",
                 hand: [],
             };
@@ -62,7 +55,7 @@ export function initialiceGameData() {
         }
 
         // Assign the room to data with the key 'Room_i'
-        data[`Room_${i}`] = room;
+        allRooms[`Room_${i}`] = room;
     }
 }
 
@@ -74,6 +67,16 @@ function shuffleDeck(deck: number[]): void {
         deck[i] = deck[j];
         deck[j] = x;
     }
+}
+
+function getNextCard(deck: number[]): number {
+    const card = deck.shift();
+    if (card === undefined) {
+        console.error("error repartiendo la siguiente carta");
+        return 1;
+    }
+
+    return card;
 }
 
 function cardColor(num: number): string {
@@ -123,35 +126,46 @@ function cardType(num: number): string {
 
 function handleRequestRoom(playerName: string, clientId: string) {
     for (let i = 1; i <= NUM_ROOMS; i++) {
-        const name = `Room_${i}`;
-        const room = data[name];
-        if (room.people < MAX_PEOPLE && room.timeout.s > 0) {
-            room.players.push({
+        const roomName = `Room_${i}`;
+        const room = allRooms[roomName];
+        if (room.conectedPlayers < MAX_PEOPLE && room.timeout.seconds > 0) {
+            room.players[room.conectedPlayers] = {
                 id: clientId,
                 name: playerName,
                 hand: [],
-            });
-            room.people++;
+            };
+            room.conectedPlayers++;
             console.log(
-                `>> User ${playerName} connected to ${name} (${room.people}/${MAX_PEOPLE})`,
+                `>> User ${playerName} connected to ${roomName} (${room.conectedPlayers}/${MAX_PEOPLE})`,
             );
 
-            const response = { type: "responseRoom", room: name };
+            const response = { type: "responseRoom", room: roomName };
             clients[clientId].send(JSON.stringify(response));
 
             // Comenzar el timeout si hay +2 personas
-            if (room.people >= 2) {
+            if (room.conectedPlayers >= 2) {
                 clearInterval(room.timeout.id);
-                room.timeout.s = 10;
+                room.timeout.seconds = 3;
+                console.log(">> ", roomName, ": starting countdown");
                 room.timeout.id = setInterval(() => {
                     // countdown
-                    room.timeout.s--;
+                    room.timeout.seconds--;
 
-                    // notificar a los jugadores
-                    if (room.timeout.s <= 0) {
-                        clearInterval(data[name]["timeout"]["id"]);
-                        // start game 
-                        console.log("start game");
+                    const response = {
+                        type: "countDown",
+                        time: room.timeout.seconds,
+                    };
+                    for (let i = 0; i < room.players.length; i++) {
+                        if (room.players[i].id !== "") {
+                            clients[room.players[i].id].send(
+                                JSON.stringify(response),
+                            );
+                        }
+                    }
+
+                    if (room.timeout.seconds <= 0) {
+                        clearInterval(allRooms[roomName]["timeout"]["id"]);
+                        startGame(roomName);
                     }
                 }, 1000);
             }
@@ -161,6 +175,107 @@ function handleRequestRoom(playerName: string, clientId: string) {
     const errorResponse = { type: "responseRoom", room: "error" };
     clients[clientId].send(JSON.stringify(errorResponse));
     console.log(">> Rooms exceeded");
+}
+
+function nextTurn(room: Room) {
+    room.turn += 1;
+
+    if (room.conectedPlayers >= room.turn) {
+        room.turn = 0;
+    }
+}
+
+function draw2(player: number, room: Room) {
+    const card1 = getNextCard(room.deck);
+    const card2 = getNextCard(room.deck);
+
+    room.players[player].hand.push(card1);
+    room.players[player].hand.push(card2);
+
+    nextTurn(room);
+}
+
+function startGame(roomName: string): void {
+    const room = allRooms[roomName];
+    if (allRooms[roomName].isPlaying) {
+        return;
+    }
+
+    if (allRooms[roomName].conectedPlayers < 2) {
+        return;
+    }
+
+    console.log(">> ", roomName, ": starting game");
+
+    const deck: number[] = Array.from({ length: 112 }, (_, i) => i);
+
+    //Quitar los valores de las cartas vacias
+    deck.splice(56, 1);
+    deck.splice(69, 1);
+    deck.splice(82, 1);
+    deck.splice(95, 1);
+
+    shuffleDeck(deck);
+
+    room.deck = deck;
+
+    // dar las cartas
+    for (let i = 0; i < room.conectedPlayers * 7; i++) {
+        const player = i % room.conectedPlayers;
+        const card = getNextCard(deck);
+
+        room.players[player].hand.push(card);
+        console.log(
+            ">> " + roomName + ": Player " + room.players[player].name +
+                " draws " +
+                cardType(card) +
+                " " + cardColor(card),
+        );
+    }
+
+    // dibujar la primera carta
+    let cardOnBoard;
+    do {
+        cardOnBoard = getNextCard(deck);
+
+        if (cardColor(cardOnBoard) == "black") {
+            deck.push(cardOnBoard);
+        } else {
+            break;
+        }
+    } while (true);
+
+    room.cardOnBoard = cardOnBoard;
+    room.turn = 0;
+    room.reverse = 0;
+
+    if (cardType(cardOnBoard) == "Draw2") {
+        draw2(room.turn, room);
+    } else if (cardType(cardOnBoard) == "Reverse") {
+        room.reverse = 1;
+    } else if (cardType(cardOnBoard) == "Skip") {
+        nextTurn(room);
+    }
+
+    console.log(">> ", roomName, ": sending first data to players");
+    const cardOnBoardMsj = { type: "sendCard", cardOnBoard: room.cardOnBoard };
+    for (let i = 0; i < room.players.length; i++) {
+        if (room.players[i].id !== "") {
+            const haveCardMsj = {
+                type: "haveCard",
+                hand: room.players[i].hand,
+            };
+            clients[room.players[i].id].send(JSON.stringify(haveCardMsj));
+
+            const turnPlayerMsj = {
+                type: "turnPlayer",
+                turn: room.turn === i ? true : false,
+            };
+            clients[room.players[i].id].send(JSON.stringify(turnPlayerMsj));
+
+            clients[room.players[i].id].send(JSON.stringify(cardOnBoardMsj));
+        }
+    }
 }
 
 export function onConnectionWS(socket: WebSocket) {

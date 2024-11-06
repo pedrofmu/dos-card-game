@@ -63,14 +63,50 @@ function init() {
   // Al recibir un mensaje del servidor
   socket.onmessage = function(event) {
     const data = JSON.parse(event.data);
-    if (data.type === 'responseRoom') {
-      // Respuesta a la solicitud de sala 
-      room = data.room;
-      hand = [];
-      turn = 0;
-      console.log('>> Room Assigned:', room);
+    switch (data.type){
+        case 'responseRoom':
+            if (data.room != 'error'){
+                responseFromRoom(data.room);
+            }else {
+                socket.close();
+                alert("Error conectandote al servidor, intentalo más tarde");
+            }
+        break;
+        case 'countDown':
+            if (data.time != 'error'){
+              handleCountDown(data.time);
+            }else {
+              socket.close();
+              alert("Error conectandote al servidor, intentalo más tarde");
+            } 
+        break;
+        case 'haveCard':
+            if (data.hand !== 'error'){
+                haveCard(data.hand); 
+            }else {
+              socket.close();
+              alert("Error conectandote al servidor, intentalo más tarde");
+            }
+        break;
+        case 'turnPlayer':
+            if (data.turn !== 'error'){
+              turnPlayer(data.turn);       
+            }else {
+              socket.close();
+              alert("Error conectandote al servidor, intentalo más tarde");
+            }
+        break;
+        case 'sendCard':
+            if (data.cardOnBoard !== 'error'){
+              sendCard(data.cardOnBoard); 
+            }else {
+              socket.close();
+              alert("Error conectandote al servidor, intentalo más tarde");
+            }
+        break;
+        default:
+            console.error("unsoported messaje: ", data.type);
     }
-    // añadir más tipos de mensaje 
   };
 
   // Al cerrar la conexión
@@ -84,6 +120,47 @@ function init() {
   };
 }
 
+function haveCard(hand){
+  ctx.clearRect(0, 400, canvas.width, canvas.height);
+  for (let i = 0; i < hand.length; i++) {
+    ctx.drawImage(
+        cards,
+        1+cdWidth*(hand[i]%14),
+        1+cdHeight*Math.floor(hand[i]/14),
+        cdWidth,
+        cdHeight,
+        (hand.length/112)*(cdWidth/3)+(canvas.width/(2+(hand.length-1)))*(i+1)-(cdWidth/4),
+        400,
+        cdWidth/2,
+        cdHeight/2
+    );
+    console.log('<< Have card', hand[i]);
+  }
+}
+
+function turnPlayer(turn){
+    turn = turn;
+    console.log(">> ", "turn: ", turn);
+}
+
+function sendCard(num){
+    ctx.drawImage(cards, 1+cdWidth*(num%14), 1+cdHeight*Math.floor(num/14), cdWidth, cdHeight, canvas.width/2-cdWidth/4, canvas.height/2-cdHeight/4, cdWidth/2, cdHeight/2);
+}
+
+function handleCountDown(time){
+  ctx.clearRect(0, 10, 15, 10);
+  ctx.fillText(time, 0, 20);
+}
+
+function responseFromRoom(roomName){
+   room = roomName;
+   hand = [];
+   turn = 0;
+   console.log('>> Room Assigned:', room);
+   ctx.fillText(roomName, 0, 10);
+   ctx.drawImage(back, canvas.width-cdWidth/2-60, canvas.height/2-cdHeight/4, cdWidth/2, cdHeight/2);
+   ctx.fillText(playerName, 100, 390);
+}
 
 function requestRoom() {
   const message = {
