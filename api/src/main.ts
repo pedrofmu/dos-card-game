@@ -1,12 +1,10 @@
 import { Application } from "@oak/oak";
 import { oakCors } from "https://deno.land/x/cors/mod.ts";
 import router from "./routes.ts";
-import { initialiceGameData } from "./game.ts";
 
 // Crear una nueva instancia de la aplicación Oak
 const app = new Application();
 
-initialiceGameData();
 
 // Usar el router en la app
 app.use(router.routes());

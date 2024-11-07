@@ -5,7 +5,6 @@ import { onConnectionWS } from "./game.ts";
 // Crear una nueva instancia del Router
 const router = new Router();
 
-// Definir la ruta para el formulario de contacto
 router.post("/contact_form", async (ctx) => {
     const body = await ctx.request.body.formData();
 

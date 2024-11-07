@@ -27,36 +27,31 @@ interface roomDictionary {
 const NUM_ROOMS = 5;
 const MAX_PEOPLE = 10;
 
-let allRooms: roomDictionary;
+const allRooms: roomDictionary = {};
 const clients: Record<string, WebSocket> = {};
-export function initialiceGameData() {
-    allRooms = {};
+export function initialiceRoomData(roomName: string) {
+    const room: Room = {
+        timeout: { id: 0, seconds: 10 },
+        deck: [],
+        reverse: 0,
+        turn: 0,
+        cardOnBoard: 0,
+        conectedPlayers: 0,
+        players: [],
+        isPlaying: false,
+    };
 
-    for (let i = 1; i <= NUM_ROOMS; i++) {
-        const room: Room = {
-            timeout: { id: 0, seconds: 10 },
-            deck: [],
-            reverse: 0,
-            turn: 0,
-            cardOnBoard: 0,
-            conectedPlayers: 0,
-            players: [],
-            isPlaying: false,
+    // Populate players array
+    for (let j = 0; j < MAX_PEOPLE; j++) {
+        const player: Player = {
+            id: "",
+            name: "",
+            hand: [],
         };
-
-        // Populate players array
-        for (let j = 0; j < MAX_PEOPLE; j++) {
-            const player: Player = {
-                id: "",
-                name: "",
-                hand: [],
-            };
-            room.players.push(player);
-        }
-
-        // Assign the room to data with the key 'Room_i'
-        allRooms[`Room_${i}`] = room;
+        room.players.push(player);
     }
+
+    allRooms[roomName] = room;
 }
 
 function shuffleDeck(deck: number[]): void {
@@ -67,6 +62,14 @@ function shuffleDeck(deck: number[]): void {
         deck[i] = deck[j];
         deck[j] = x;
     }
+}
+
+function findPlayer(
+    room: Room,
+    key: "id" | "name",
+    value: string,
+): Player {
+    return room.players.find((player) => player[key] === value) as Player;
 }
 
 function getNextCard(deck: number[]): number {
@@ -124,10 +127,18 @@ function cardType(num: number): string {
     }
 }
 
-function handleRequestRoom(playerName: string, clientId: string) {
+function handleRequestRoom(
+    playerName: string,
+    roomName: string,
+    clientId: string,
+) {
     for (let i = 1; i <= NUM_ROOMS; i++) {
-        const roomName = `Room_${i}`;
+        if (!(roomName in allRooms)) {
+            initialiceRoomData(roomName);
+        }
+
         const room = allRooms[roomName];
+
         if (room.conectedPlayers < MAX_PEOPLE && room.timeout.seconds > 0) {
             room.players[room.conectedPlayers] = {
                 id: clientId,
@@ -207,6 +218,8 @@ function startGame(roomName: string): void {
 
     console.log(">> ", roomName, ": starting game");
 
+    allRooms[roomName].isPlaying = true;
+
     const deck: number[] = Array.from({ length: 112 }, (_, i) => i);
 
     //Quitar los valores de las cartas vacias
@@ -279,7 +292,10 @@ function startGame(roomName: string): void {
 }
 
 function handlePlayerDisconnection(clientID: string): void {
-    const playerDisconnected = { type: 'playerDisconnected', state: 'no_error' };
+    const playerDisconnected = {
+        type: "playerDisconnected",
+        state: "no_error",
+    };
 
     for (const roomKey in allRooms) {
         let playerFound = false;
@@ -295,6 +311,13 @@ function handlePlayerDisconnection(clientID: string): void {
         if (!playerFound) continue;
 
         console.log(">> ", roomKey, " disconecting all players");
+
+        if (!allRooms[roomKey].isPlaying) {
+            return;
+        }
+
+        allRooms[roomKey].isPlaying = false;
+
         // notificar a los demas jugadores
         for (let i = 0; i < allRooms[roomKey].players.length; i++) {
             const player = allRooms[roomKey].players[i];
@@ -304,26 +327,61 @@ function handlePlayerDisconnection(clientID: string): void {
             }
         }
 
+        delete allRooms[roomKey];
+
         break;
     }
 }
 
+function handleDrawCard(cuantity: number, clientId: string, roomName: string) {
+    const room = allRooms[roomName];
+    const player = findPlayer(room, "id", clientId);
+    for (let i = 0; i < cuantity; i++) {
+        const newCard = getNextCard(room.deck);
+        player.hand.push(newCard);
+    }
+
+    const haveCardMsj = {
+        type: "haveCard",
+        hand: player.hand,
+    };
+
+    clients[player.id].send(JSON.stringify(haveCardMsj));
+
+    nextTurn(room);
+
+    //send player turn
+}
 
 export function onConnectionWS(socket: WebSocket) {
     const clientId = Math.random().toString(36).slice(2);
     clients[clientId] = socket;
 
+    let roomName: string;
+
     socket.onopen = () => {
         console.log(`Client connected: ${clientId}`);
     };
 
-    socket.onmessage = async (event) => {
+    socket.onmessage = (event) => {
         try {
             const message = JSON.parse(event.data);
 
             // Check the type of event
-            if (message.type === "requestRoom") {
-                handleRequestRoom(message.playerName, clientId);
+            switch (message.type) {
+                case "requestRoom":
+                    handleRequestRoom(
+                        message.playerName,
+                        message.roomName,
+                        clientId,
+                    );
+                    roomName = message.roomName;
+                    break;
+                case "drawCard":
+                    handleDrawCard(message.cuantity, clientId, roomName);
+                    break;
+                default:
+                    console.error(`>> Unsuported message: ${message.type}`);
             }
         } catch (error) {
             console.error("Error parsing message", error);

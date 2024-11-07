@@ -14,6 +14,7 @@ let room;
 let hand = [];
 let turn;
 let playerName;
+let roomName;
 
 function setCookie(name, value, seconds) {
   let date = new Date();
@@ -43,8 +44,8 @@ function init() {
   cards.src = '../images/deck.svg';
   back.src = '../images/back.svg';
 
-  document.addEventListener('touchstart', () => {}, false);
-  document.addEventListener('click', () => {}, false);
+  document.addEventListener('touchstart', onMouseClick, false);
+  document.addEventListener('click', onMouseClick, false);
 
   playerName = getCookie('playerName');
   if (playerName == null) {
@@ -54,6 +55,8 @@ function init() {
     }
     setCookie('playerName', playerName, 24 * 3600);
   }
+
+  roomName = getCookie('roomName');
 
   socket = new WebSocket(`ws://${window.location.host}/api/ws`); 
 
@@ -134,26 +137,28 @@ function handleDisconection(){
     location.href = "/";
 }
 
-function haveCard(hand){
+function haveCard(recivedHand){
+  hand = recivedHand;
   ctx.clearRect(0, 400, canvas.width, canvas.height);
-  for (let i = 0; i < hand.length; i++) {
+  for (let i = 0; i < recivedHand.length; i++) {
+
     ctx.drawImage(
         cards,
-        1+cdWidth*(hand[i]%14),
-        1+cdHeight*Math.floor(hand[i]/14),
+        1+cdWidth*(recivedHand[i]%14),
+        1+cdHeight*Math.floor(recivedHand[i]/14),
         cdWidth,
         cdHeight,
-        (hand.length/112)*(cdWidth/3)+(canvas.width/(2+(hand.length-1)))*(i+1)-(cdWidth/4),
+        (recivedHand.length/112)*(cdWidth/3)+(canvas.width/(2+(hand.length-1)))*(i+1)-(cdWidth/4),
         400,
         cdWidth/2,
         cdHeight/2
     );
-    console.log('<< Have card', hand[i]);
+    console.log('<< Have card', recivedHand[i]);
   }
 }
 
-function turnPlayer(turn){
-    turn = turn;
+function turnPlayer(isTurn){
+    turn = isTurn;
     console.log(">> ", "turn: ", turn);
 }
 
@@ -179,10 +184,60 @@ function responseFromRoom(roomName){
 function requestRoom() {
   const message = {
     type: 'requestRoom',
-    playerName: playerName
+    playerName: playerName,
+    roomName: roomName 
   };
   socket.send(JSON.stringify(message));
   console.log('>> Room Request');
+}
+
+function debugArea(x1, x2, y1, y2) {
+  ctx.beginPath();
+  ctx.moveTo(0, y1);
+  ctx.lineTo(canvas.width, y1);
+  ctx.closePath();
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(0, y2);
+  ctx.lineTo(canvas.width, y2);
+  ctx.closePath();
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x1, 0);
+  ctx.lineTo(x1, canvas.height);
+  ctx.closePath();
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(x2, 0);
+  ctx.lineTo(x2, canvas.height);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+function onMouseClick(e) {
+  const offsetY = parseInt(window.getComputedStyle(canvas).marginTop);
+  const offsetX = parseInt(window.getComputedStyle(canvas).marginLeft);
+  const X = e.pageX - offsetX;
+  const Y = e.pageY - offsetY;
+
+  let lastCard = (hand.length/112)*(cdWidth/3)+(canvas.width/(2+(hand.length-1)))*(hand.length)-(cdWidth/4)+cdWidth/2;
+  let initCard = 2 + (hand.length/112)*(cdWidth/3)+(canvas.width/(2+(hand.length-1)))-(cdWidth/4);
+
+  if (Y >= 400 && Y <= 580 && X >= initCard && X <= lastCard) {
+    for (let i = 0, pos = initCard; i < hand.length; i++, pos += canvas.width/(2+(hand.length-1))) {
+      if (X >= pos && X <= pos+canvas.width/(2+(hand.length-1))) {
+        //debugArea(pos, pos+canvas.width/(2+(hand.length-1)), 400, 580);
+        console.log(`clicked card ${hand[i]}`); 
+        return;
+      }
+    }
+  } else if (X >= canvas.width-cdWidth/2-60 &&  X <= canvas.width-60 &&
+    Y >= canvas.height/2-cdHeight/4 && Y <= canvas.height/2+cdHeight/4) {
+      console.log("draw card");
+  }
 }
 
 init();
