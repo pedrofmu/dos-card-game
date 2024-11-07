@@ -22,10 +22,14 @@ function getCookie(name) {
   return null;
 }
 
-if (getCookie("roomName") === null){
-    setCookie("roomName", "default_room", 24 * 3600);
-}
-
-document.getElementById("play_online_btn").addEventListener("click", () => {
-     location.href = "/game/game.html";  
+document.getElementById("aplly_settings_btn").addEventListener("click", ()=> {
+    setCookie("roomName", document.getElementById("room_name_input").value, 24 * 3600);
+    setCookie("playerName", document.getElementById("player_name_input").value, 24 * 3600);
+    alert("Se han aplicado los ajustes");
 });
+
+let playerName = getCookie('playerName');
+document.getElementById("player_name_input").value = playerName;
+
+let roomName = getCookie('roomName');
+document.getElementById("room_name_input").value = roomName;

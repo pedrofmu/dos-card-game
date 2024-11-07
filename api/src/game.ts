@@ -278,6 +278,37 @@ function startGame(roomName: string): void {
     }
 }
 
+function handlePlayerDisconnection(clientID: string): void {
+    const playerDisconnected = { type: 'playerDisconnected', state: 'no_error' };
+
+    for (const roomKey in allRooms) {
+        let playerFound = false;
+
+        // buscar si el jugador esta en la sala
+        for (let i = 0; i < allRooms[roomKey].players.length; i++) {
+            if (allRooms[roomKey].players[i].id === clientID) {
+                playerFound = true;
+                break;
+            }
+        }
+
+        if (!playerFound) continue;
+
+        console.log(">> ", roomKey, " disconecting all players");
+        // notificar a los demas jugadores
+        for (let i = 0; i < allRooms[roomKey].players.length; i++) {
+            const player = allRooms[roomKey].players[i];
+            if (player.id !== "" && player.id !== clientID) {
+                console.log(">> sending disconect msj to: ", player.name);
+                clients[player.id].send(JSON.stringify(playerDisconnected));
+            }
+        }
+
+        break;
+    }
+}
+
+
 export function onConnectionWS(socket: WebSocket) {
     const clientId = Math.random().toString(36).slice(2);
     clients[clientId] = socket;
@@ -301,6 +332,7 @@ export function onConnectionWS(socket: WebSocket) {
 
     socket.onclose = () => {
         console.log(`Client disconnected: ${clientId}`);
+        handlePlayerDisconnection(clientId);
         delete clients[clientId];
     };
 

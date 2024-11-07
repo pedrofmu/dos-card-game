@@ -1,3 +1,5 @@
+'use strict';
+
 let socket;
 
 const canvas = document.getElementById('game_canvas');
@@ -104,6 +106,13 @@ function init() {
               alert("Error conectandote al servidor, intentalo más tarde");
             }
         break;
+        case 'playerDisconnected':
+            if (data.state !== 'error'){
+              handleDisconection();
+            }else{
+              socket.close();
+            }
+        break;
         default:
             console.error("unsoported messaje: ", data.type);
     }
@@ -118,6 +127,11 @@ function init() {
   socket.onerror = function(error) {
     console.error("WebSocket error:", error);
   };
+}
+
+function handleDisconection(){
+    alert("Se ha desconectado un jugador");
+    location.href = "/";
 }
 
 function haveCard(hand){
