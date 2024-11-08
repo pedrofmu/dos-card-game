@@ -12,7 +12,7 @@ interface Player {
 interface Room {
     timeout: Timeout;
     deck: number[];
-    reverse: number;
+    reverse: boolean;
     turn: number;
     cardOnBoard: number;
     conectedPlayers: number;
@@ -33,7 +33,7 @@ export function initialiceRoomData(roomName: string) {
     const room: Room = {
         timeout: { id: 0, seconds: 10 },
         deck: [],
-        reverse: 0,
+        reverse: false,
         turn: 0,
         cardOnBoard: 0,
         conectedPlayers: 0,
@@ -82,48 +82,74 @@ function getNextCard(deck: number[]): number {
     return card;
 }
 
-function cardColor(num: number): string {
-    let color: string = "";
-    if (num % 14 === 13) {
-        return "black";
+enum CardColor {
+    red,
+    yellow,
+    green,
+    blue,
+    black,
+}
+
+function cardColor(num: number): CardColor {
+    // black card chosee
+    switch (Math.round(num)){
+        case 1000:
+            return CardColor.red;
+        case 2000:
+            return CardColor.yellow;
+        case 3000:
+            return CardColor.green;
+        case 4000:
+            return CardColor.blue;
     }
+
+    if (num % 14 === 13) {
+        return CardColor.black;
+    }
+
     switch (Math.floor(num / 14)) {
         case 0:
         case 4:
-            color = "red";
-            break;
+            return CardColor.red;
         case 1:
         case 5:
-            color = "yellow";
-            break;
+            return CardColor.yellow;
         case 2:
         case 6:
-            color = "green";
-            break;
+            return CardColor.green;
         case 3:
         case 7:
-            color = "blue";
-            break;
+            return CardColor.blue;
     }
-    return color;
+
+    return CardColor.black;
 }
 
-function cardType(num: number): string {
+enum CardType {
+    skip,
+    reverse,
+    draw2,
+    draw4,
+    wild,
+    standard,
+}
+
+function cardType(num: number): CardType {
     switch (num % 14) {
         case 10:
-            return "Skip";
+            return CardType.skip;
         case 11:
-            return "Reverse";
+            return CardType.reverse;
         case 12:
-            return "Draw2";
+            return CardType.draw2;
         case 13:
             if (Math.floor(num / 14) >= 4) {
-                return "Draw4";
+                return CardType.draw4;
             } else {
-                return "Wild";
+                return CardType.wild;
             }
         default:
-            return "Number " + (num % 14);
+            return CardType.standard;
     }
 }
 
@@ -150,7 +176,7 @@ function handleRequestRoom(
                 `>> User ${playerName} connected to ${roomName} (${room.conectedPlayers}/${MAX_PEOPLE})`,
             );
 
-            const response = { type: "responseRoom", room: roomName };
+            const response = { type: "responseRoom", roomName: roomName };
             clients[clientId].send(JSON.stringify(response));
 
             // Comenzar el timeout si hay +2 personas
@@ -188,22 +214,43 @@ function handleRequestRoom(
     console.log(">> Rooms exceeded");
 }
 
-function nextTurn(room: Room) {
-    room.turn += 1;
-
-    if (room.conectedPlayers >= room.turn) {
-        room.turn = 0;
+function notifyTurn(room: Room) {
+    for (let i = 0; i < room.players.length; i++) {
+        if (room.players[i].id !== "") {
+            const turnPlayerMsj = {
+                type: "turnPlayer",
+                yourTurn: room.turn === i ? true : false,
+                playerTurn: room.players[room.turn].name,
+                playersList: room.players.map((player) => player.name),
+            };
+            clients[room.players[i].id].send(JSON.stringify(turnPlayerMsj));
+        }
     }
 }
 
-function draw2(player: number, room: Room) {
-    const card1 = getNextCard(room.deck);
-    const card2 = getNextCard(room.deck);
+function notifyHand(player: Player) {
+    const haveCardMsj = {
+        type: "haveCard",
+        hand: player.hand,
+    };
+    clients[player.id].send(JSON.stringify(haveCardMsj));
+}
 
-    room.players[player].hand.push(card1);
-    room.players[player].hand.push(card2);
+function notifyCardOnBoard(room: Room) {
+    const cardOnBoardMsj = { type: "sendCard", cardOnBoard: room.cardOnBoard };
+    for (let i = 0; i < room.players.length; i++) {
+        if (room.players[i].id !== "") {
+            clients[room.players[i].id].send(JSON.stringify(cardOnBoardMsj));
+        }
+    }
+}
 
-    nextTurn(room);
+function nextTurn(room: Room) {
+    room.turn += 1;
+
+    if (room.turn >= room.conectedPlayers) {
+        room.turn = 0;
+    }
 }
 
 function startGame(roomName: string): void {
@@ -240,9 +287,9 @@ function startGame(roomName: string): void {
         room.players[player].hand.push(card);
         console.log(
             ">> " + roomName + ": Player " + room.players[player].name +
-                " draws " +
-                cardType(card) +
-                " " + cardColor(card),
+            " draws " +
+            cardType(card) +
+            " " + cardColor(card),
         );
     }
 
@@ -251,7 +298,7 @@ function startGame(roomName: string): void {
     do {
         cardOnBoard = getNextCard(deck);
 
-        if (cardColor(cardOnBoard) == "black") {
+        if (cardColor(cardOnBoard) == CardColor.black) {
             deck.push(cardOnBoard);
         } else {
             break;
@@ -260,34 +307,38 @@ function startGame(roomName: string): void {
 
     room.cardOnBoard = cardOnBoard;
     room.turn = 0;
-    room.reverse = 0;
+    room.reverse = false;
 
-    if (cardType(cardOnBoard) == "Draw2") {
-        draw2(room.turn, room);
-    } else if (cardType(cardOnBoard) == "Reverse") {
-        room.reverse = 1;
-    } else if (cardType(cardOnBoard) == "Skip") {
+    if (cardType(cardOnBoard) == CardType.draw2) {
+        const card1 = getNextCard(room.deck);
+        const card2 = getNextCard(room.deck);
+
+        room.players[room.turn].hand.push(card1);
+        room.players[room.turn].hand.push(card2);
+
+        nextTurn(room);
+    } else if (cardType(cardOnBoard) == CardType.reverse) {
+        room.reverse = !room.reverse;
+    } else if (cardType(cardOnBoard) == CardType.skip) {
         nextTurn(room);
     }
 
     console.log(">> ", roomName, ": sending first data to players");
-    const cardOnBoardMsj = { type: "sendCard", cardOnBoard: room.cardOnBoard };
+
+    notifyCardOnBoard(room);
     for (let i = 0; i < room.players.length; i++) {
         if (room.players[i].id !== "") {
-            const haveCardMsj = {
-                type: "haveCard",
-                hand: room.players[i].hand,
-            };
-            clients[room.players[i].id].send(JSON.stringify(haveCardMsj));
-
-            const turnPlayerMsj = {
-                type: "turnPlayer",
-                turn: room.turn === i ? true : false,
-            };
-            clients[room.players[i].id].send(JSON.stringify(turnPlayerMsj));
-
-            clients[room.players[i].id].send(JSON.stringify(cardOnBoardMsj));
+            notifyHand(room.players[i]);
         }
+    }
+
+    notifyTurn(room);
+}
+
+function addCardsToPlayer(cuantity: number, player: Player, room: Room) {
+    for (let i = 0; i < cuantity; i++) {
+        const newCard = getNextCard(room.deck);
+        player.hand.push(newCard);
     }
 }
 
@@ -336,21 +387,104 @@ function handlePlayerDisconnection(clientID: string): void {
 function handleDrawCard(cuantity: number, clientId: string, roomName: string) {
     const room = allRooms[roomName];
     const player = findPlayer(room, "id", clientId);
-    for (let i = 0; i < cuantity; i++) {
-        const newCard = getNextCard(room.deck);
-        player.hand.push(newCard);
-    }
 
-    const haveCardMsj = {
-        type: "haveCard",
-        hand: player.hand,
-    };
+    addCardsToPlayer(cuantity, player, room);
 
-    clients[player.id].send(JSON.stringify(haveCardMsj));
+    notifyHand(player);
+
+    notifyCardOnBoard(room);
 
     nextTurn(room);
 
-    //send player turn
+    notifyTurn(room);
+}
+
+function handlePlayCard(
+    playedCardRaw: number,
+    clientId: string,
+    roomName: string,
+) {
+    const room = allRooms[roomName];
+    const player = findPlayer(room, "id", clientId);
+
+    const playedCard = Math.floor(playedCardRaw);
+
+    // representa color escogido 1000: rojo, 2000: amarillo, 3000: verde, 4000: azul
+    const choosedColor = (playedCardRaw - playedCard) * 10000;
+
+    // get played card data
+    const playedCardType = cardType(playedCard);
+    const playedCardColor = cardColor(playedCard);
+    const playedCardNumber = playedCard % 14;
+
+    // get card on board data
+    const cardOnBoardColor = cardColor(room.cardOnBoard);
+    const cardOnBoardNumber = room.cardOnBoard % 14;
+
+    console.log(`>> Card on board color: ${room.cardOnBoard}`);
+
+    if (
+        !(playedCardNumber === cardOnBoardNumber ||
+            playedCardColor === cardOnBoardColor ||
+            playedCardColor === CardColor.black)
+    ) {
+        // DEVOLVER QUE NO PUEDES JUGAR ESA CARTA
+        const responseFromPlayedCardMsj = {
+            type: "responseFromPlayedCard",
+            state: "card_not_playable",
+        };
+
+        clients[clientId].send(JSON.stringify(responseFromPlayedCardMsj));
+        return;
+    }
+
+    switch (playedCardType) {
+        case CardType.standard:
+            room.cardOnBoard = playedCard;
+            break;
+        case CardType.wild:
+            room.cardOnBoard = playedCard;
+            break;
+        case CardType.reverse:
+            room.reverse = !room.reverse;
+            room.cardOnBoard = playedCard;
+            break;
+        case CardType.skip:
+            nextTurn(room);
+            room.cardOnBoard = playedCard;
+            break;
+        case CardType.draw2:
+            nextTurn(room);
+            addCardsToPlayer(2, room.players[room.turn], room);
+            notifyHand(room.players[room.turn]);
+            room.cardOnBoard = playedCard;
+            break;
+        case CardType.draw4:
+            nextTurn(room);
+            addCardsToPlayer(4, room.players[room.turn], room);
+            notifyHand(room.players[room.turn]);
+            room.cardOnBoard = playedCard;
+            break;
+    }
+
+    const responseFromPlayedCardMsj = {
+        type: "responseFromPlayedCard",
+        state: "card_played",
+    };
+
+    clients[clientId].send(JSON.stringify(responseFromPlayedCardMsj));
+    player.hand = player.hand.filter((card) => card !== playedCard);
+    notifyHand(player);
+
+    notifyCardOnBoard(room);
+
+    nextTurn(room);
+
+    notifyTurn(room);
+
+    if (choosedColor > 0){
+        room.cardOnBoard = choosedColor;
+    }
 }
 
 export function onConnectionWS(socket: WebSocket) {
@@ -379,6 +513,9 @@ export function onConnectionWS(socket: WebSocket) {
                     break;
                 case "drawCard":
                     handleDrawCard(message.cuantity, clientId, roomName);
+                    break;
+                case "playCard":
+                    handlePlayCard(message.card, clientId, roomName);
                     break;
                 default:
                     console.error(`>> Unsuported message: ${message.type}`);
