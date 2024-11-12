@@ -1,0 +1,36 @@
+.top_div {
+    display: flex;
+}
+
+.information_div {
+    margin: 100px;
+}
+
+.information_div>ul {
+    font-family: "Noto Sans", sans-serif;
+    color: var(--platinum);
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.dos_btn {
+    margin: 40px;
+    width: 150px;
+    background: var(--caribbean-current);
+    border-radius: 5px;
+    border: 0;
+    cursor: pointer;
+    color: white;
+    font-size: 24px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    transition: all 0.3s;
+    font-weight: 700;
+    transition: background-color 0.2s;
+    transition: box-shadow 0.2s;
+}
+
+.dos_btn:hover {
+    background: var(--indigo-dye);
+    box-shadow: 5px 5px var(--white);
+}

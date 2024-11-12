@@ -7,6 +7,7 @@ interface Player {
     id: string;
     name: string;
     hand: number[];
+    dos: boolean;
 }
 
 interface Room {
@@ -15,7 +16,7 @@ interface Room {
     reverse: boolean;
     turn: number;
     cardOnBoard: number;
-    conectedPlayers: number;
+    connectedPlayers: number;
     players: Player[];
     isPlaying: boolean;
 }
@@ -24,7 +25,6 @@ interface roomDictionary {
     [key: string]: Room;
 }
 
-const NUM_ROOMS = 5;
 const MAX_PEOPLE = 10;
 
 const allRooms: roomDictionary = {};
@@ -36,7 +36,7 @@ export function initialiceRoomData(roomName: string) {
         reverse: false,
         turn: 0,
         cardOnBoard: 0,
-        conectedPlayers: 0,
+        connectedPlayers: 0,
         players: [],
         isPlaying: false,
     };
@@ -47,6 +47,7 @@ export function initialiceRoomData(roomName: string) {
             id: "",
             name: "",
             hand: [],
+            dos: false,
         };
         room.players.push(player);
     }
@@ -73,6 +74,16 @@ function findPlayer(
 }
 
 function getNextCard(deck: number[]): number {
+    if (deck.length <= 0) {
+        deck = Array.from({ length: 112 }, (_, i) => i);
+        deck.splice(56, 1);
+        deck.splice(69, 1);
+        deck.splice(82, 1);
+        deck.splice(95, 1);
+
+        shuffleDeck(deck);
+    }
+
     const card = deck.shift();
     if (card === undefined) {
         console.error("error repartiendo la siguiente carta");
@@ -92,7 +103,7 @@ enum CardColor {
 
 function cardColor(num: number): CardColor {
     // black card chosee
-    switch (Math.round(num)){
+    switch (Math.round(num)) {
         case 1000:
             return CardColor.red;
         case 2000:
@@ -158,60 +169,88 @@ function handleRequestRoom(
     roomName: string,
     clientId: string,
 ) {
-    for (let i = 1; i <= NUM_ROOMS; i++) {
-        if (!(roomName in allRooms)) {
-            initialiceRoomData(roomName);
-        }
+    // Asegura que la sala existe antes del bucle
+    if (!(roomName in allRooms)) {
+        initialiceRoomData(roomName);
+    }
 
-        const room = allRooms[roomName];
+    const room = allRooms[roomName];
 
-        if (room.conectedPlayers < MAX_PEOPLE && room.timeout.seconds > 0) {
-            room.players[room.conectedPlayers] = {
-                id: clientId,
-                name: playerName,
-                hand: [],
+    for (let i = 0; i < room.players.length; i++) {
+        if (room.players[i].name === playerName) {
+            const response = {
+                type: "responseRoom",
+                roomName: "player_already_exist",
             };
-            room.conectedPlayers++;
-            console.log(
-                `>> User ${playerName} connected to ${roomName} (${room.conectedPlayers}/${MAX_PEOPLE})`,
-            );
-
-            const response = { type: "responseRoom", roomName: roomName };
-            clients[clientId].send(JSON.stringify(response));
-
-            // Comenzar el timeout si hay +2 personas
-            if (room.conectedPlayers >= 2) {
-                clearInterval(room.timeout.id);
-                room.timeout.seconds = 3;
-                console.log(">> ", roomName, ": starting countdown");
-                room.timeout.id = setInterval(() => {
-                    // countdown
-                    room.timeout.seconds--;
-
-                    const response = {
-                        type: "countDown",
-                        time: room.timeout.seconds,
-                    };
-                    for (let i = 0; i < room.players.length; i++) {
-                        if (room.players[i].id !== "") {
-                            clients[room.players[i].id].send(
-                                JSON.stringify(response),
-                            );
-                        }
-                    }
-
-                    if (room.timeout.seconds <= 0) {
-                        clearInterval(allRooms[roomName]["timeout"]["id"]);
-                        startGame(roomName);
-                    }
-                }, 1000);
-            }
+            sendWSMsj(clients[clientId], JSON.stringify(response));
             return;
         }
     }
+
+    if (room.connectedPlayers < MAX_PEOPLE && room.timeout.seconds > 0) {
+        room.players[room.connectedPlayers] = {
+            id: clientId,
+            name: playerName,
+            hand: [],
+            dos: false,
+        };
+        room.connectedPlayers++;
+        console.log(
+            `>> User ${playerName} connected to ${roomName} (${room.connectedPlayers}/${MAX_PEOPLE})`,
+        );
+
+        const response = { type: "responseRoom", roomName: roomName };
+        sendWSMsj(clients[clientId], JSON.stringify(response));
+
+        // Comienza el temporizador si hay al menos 2 jugadores
+        if (room.connectedPlayers >= 2) {
+            clearInterval(room.timeout.id);
+            room.timeout.seconds = 5;
+            console.log(">> ", roomName, ": starting countdown");
+
+            room.timeout.id = setInterval(() => {
+                room.timeout.seconds--;
+
+                const countdownResponse = {
+                    type: "countDown",
+                    time: room.timeout.seconds,
+                };
+                for (const player of room.players) {
+                    if (player.id) {
+                        sendWSMsj(
+                            clients[player.id],
+                            JSON.stringify(countdownResponse),
+                        );
+                    }
+                }
+
+                if (room.timeout.seconds <= 0) {
+                    clearInterval(room.timeout.id);
+                    startGame(roomName);
+                }
+            }, 1000);
+        }
+        return;
+    }
+
+    // Si la conexión falla
     const errorResponse = { type: "responseRoom", room: "error" };
-    clients[clientId].send(JSON.stringify(errorResponse));
-    console.log(">> Rooms exceeded");
+    sendWSMsj(clients[clientId], JSON.stringify(errorResponse));
+    console.log(">> Rooms exceeded or no valid room found");
+}
+
+function sendWSMsj(ws: WebSocket, message: string) {
+    try {
+        ws.send(message);
+    } catch (error) {
+        console.error(">> Error sending message: ", error);
+        for (const clientID in clients) {
+            if (clients[clientID] === ws) {
+                handlePlayerDisconnection(clientID);
+                delete clients[clientID];
+            }
+        }
+    }
 }
 
 function notifyTurn(room: Room) {
@@ -221,9 +260,17 @@ function notifyTurn(room: Room) {
                 type: "turnPlayer",
                 yourTurn: room.turn === i ? true : false,
                 playerTurn: room.players[room.turn].name,
-                playersList: room.players.map((player) => player.name),
+                playersList: room.players.map((player) =>
+                    player.id !== ""
+                        ? `${player.name} (${player.hand.length})`
+                        : ""
+                ),
             };
-            clients[room.players[i].id].send(JSON.stringify(turnPlayerMsj));
+
+            sendWSMsj(
+                clients[room.players[i].id],
+                JSON.stringify(turnPlayerMsj),
+            );
         }
     }
 }
@@ -233,23 +280,37 @@ function notifyHand(player: Player) {
         type: "haveCard",
         hand: player.hand,
     };
-    clients[player.id].send(JSON.stringify(haveCardMsj));
+
+    sendWSMsj(clients[player.id], JSON.stringify(haveCardMsj));
 }
 
 function notifyCardOnBoard(room: Room) {
     const cardOnBoardMsj = { type: "sendCard", cardOnBoard: room.cardOnBoard };
     for (let i = 0; i < room.players.length; i++) {
         if (room.players[i].id !== "") {
-            clients[room.players[i].id].send(JSON.stringify(cardOnBoardMsj));
+            sendWSMsj(
+                clients[room.players[i].id],
+                JSON.stringify(cardOnBoardMsj),
+            );
+        }
+    }
+}
+
+function notifyWin(room: Room, playerWin: Player) {
+    const winMsj = { type: "win", playerWin: playerWin.name };
+    for (let i = 0; i < room.players.length; i++) {
+        if (room.players[i].id !== "") {
+            sendWSMsj(clients[room.players[i].id], JSON.stringify(winMsj));
         }
     }
 }
 
 function nextTurn(room: Room) {
-    room.turn += 1;
-
-    if (room.turn >= room.conectedPlayers) {
-        room.turn = 0;
+    if (!room.reverse) {
+        room.turn = (room.turn + 1) % room.connectedPlayers;
+    } else {
+        room.turn = (room.turn - 1 + room.connectedPlayers) %
+            room.connectedPlayers;
     }
 }
 
@@ -259,7 +320,7 @@ function startGame(roomName: string): void {
         return;
     }
 
-    if (allRooms[roomName].conectedPlayers < 2) {
+    if (allRooms[roomName].connectedPlayers < 2) {
         return;
     }
 
@@ -280,21 +341,21 @@ function startGame(roomName: string): void {
     room.deck = deck;
 
     // dar las cartas
-    for (let i = 0; i < room.conectedPlayers * 7; i++) {
-        const player = i % room.conectedPlayers;
+    for (let i = 0; i < room.connectedPlayers * 7; i++) {
+        const player = i % room.connectedPlayers;
         const card = getNextCard(deck);
 
         room.players[player].hand.push(card);
         console.log(
             ">> " + roomName + ": Player " + room.players[player].name +
-            " draws " +
-            cardType(card) +
-            " " + cardColor(card),
+                " draws " +
+                cardType(card) +
+                " " + cardColor(card),
         );
     }
 
     // dibujar la primera carta
-    let cardOnBoard;
+    let cardOnBoard: number;
     do {
         cardOnBoard = getNextCard(deck);
 
@@ -363,10 +424,6 @@ function handlePlayerDisconnection(clientID: string): void {
 
         console.log(">> ", roomKey, " disconecting all players");
 
-        if (!allRooms[roomKey].isPlaying) {
-            return;
-        }
-
         allRooms[roomKey].isPlaying = false;
 
         // notificar a los demas jugadores
@@ -374,10 +431,14 @@ function handlePlayerDisconnection(clientID: string): void {
             const player = allRooms[roomKey].players[i];
             if (player.id !== "" && player.id !== clientID) {
                 console.log(">> sending disconect msj to: ", player.name);
-                clients[player.id].send(JSON.stringify(playerDisconnected));
+                sendWSMsj(
+                    clients[player.id],
+                    JSON.stringify(playerDisconnected),
+                );
             }
         }
 
+        console.log(`>> deleting room: ${roomKey}`);
         delete allRooms[roomKey];
 
         break;
@@ -397,6 +458,34 @@ function handleDrawCard(cuantity: number, clientId: string, roomName: string) {
     nextTurn(room);
 
     notifyTurn(room);
+}
+
+function handleDOS(clientId: string, roomName: string) {
+    const room = allRooms[roomName];
+    const player = findPlayer(room, "id", clientId);
+    console.log(`>> ${roomName}: DOS!`);
+
+    if (player.dos) {
+        console.log(`>> ${roomName}: ${player.name} no loger need to say 2`);
+        player.dos = false;
+        return;
+    }
+
+    for (let i = 0; i < room.players.length; i++) {
+        if (room.players[i].id === "") {
+            continue;
+        }
+
+        if (room.players[i].dos) {
+            console.log(
+                `>> ${roomName}: ${room.players[i].name} forgot to say 2`,
+            );
+            addCardsToPlayer(2, room.players[i], room);
+            notifyHand(room.players[i]);
+            room.players[i].dos = false;
+            return;
+        }
+    }
 }
 
 function handlePlayCard(
@@ -434,7 +523,7 @@ function handlePlayCard(
             state: "card_not_playable",
         };
 
-        clients[clientId].send(JSON.stringify(responseFromPlayedCardMsj));
+        sendWSMsj(clients[clientId], JSON.stringify(responseFromPlayedCardMsj));
         return;
     }
 
@@ -472,7 +561,7 @@ function handlePlayCard(
         state: "card_played",
     };
 
-    clients[clientId].send(JSON.stringify(responseFromPlayedCardMsj));
+    sendWSMsj(clients[clientId], JSON.stringify(responseFromPlayedCardMsj));
     player.hand = player.hand.filter((card) => card !== playedCard);
     notifyHand(player);
 
@@ -482,7 +571,16 @@ function handlePlayCard(
 
     notifyTurn(room);
 
-    if (choosedColor > 0){
+    console.log(`>> Player ${player.name} : ${player.hand.length}`);
+
+    player.dos = player.hand.length === 2;
+
+    if (player.hand.length <= 0) {
+        notifyWin(room, player);
+        delete allRooms[roomName];
+    }
+
+    if (choosedColor > 0) {
         room.cardOnBoard = choosedColor;
     }
 }
@@ -517,6 +615,9 @@ export function onConnectionWS(socket: WebSocket) {
                 case "playCard":
                     handlePlayCard(message.card, clientId, roomName);
                     break;
+                case "dos":
+                    handleDOS(clientId, roomName);
+                    break;
                 default:
                     console.error(`>> Unsuported message: ${message.type}`);
             }
@@ -533,5 +634,7 @@ export function onConnectionWS(socket: WebSocket) {
 
     socket.onerror = (error) => {
         console.error(`WebSocket error for client ${clientId}:`, error);
+        handlePlayerDisconnection(clientId);
+        delete clients[clientId];
     };
 }

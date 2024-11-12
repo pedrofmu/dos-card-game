@@ -1,15 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>DOS - Game</title>
-		<meta charset="UTF-8">
-		<link rel="stylesheet" href="game.css"/>
-        <link rel="stylesheet" href="../common-styles.css"/>
-	</head>
-	<body>
-        <canvas width="1000" height="600" id="game_canvas"></canvas>
-        <ul id="lista-jugadores"></ul>
 
-        <script src="main.js"></script>
- 	</body>
+<head>
+    <title>DOS - Game</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="game.css" />
+    <link rel="stylesheet" href="../common-styles.css" />
+</head>
+
+<body>
+    <div class="top_div">
+        <canvas width="1000" height="600" id="game_canvas"></canvas>
+        <div class="information_div">
+            <h2 id="room_name"></h2>
+            <ul id="lista-jugadores"></ul>
+        </div>
+    </div>
+    <button type="button" class="dos_btn" id="dos-button">DOS!</button>
+
+    <script src="main.js"></script>
+</body>
+
 </html>

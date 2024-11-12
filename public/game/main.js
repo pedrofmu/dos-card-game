@@ -5,6 +5,8 @@ let socket;
 const canvas = document.getElementById('game_canvas');
 const ctx = canvas.getContext('2d');
 
+const dosButton = document.getElementById('dos-button');
+
 const cdWidth = 240;
 const cdHeight = 360;
 const cards = new Image();
@@ -42,7 +44,7 @@ function getCookie(name) {
 }
 
 function init() {
-    ctx.font = "12px Arial";
+    ctx.font = "20px Arial";
     canvas.style.backgroundColor = '#10ac84';
     cards.src = '../images/deck.svg';
     back.src = '../images/back.svg';
@@ -73,27 +75,38 @@ function init() {
         const data = JSON.parse(event.data);
         switch (data.type) {
             case 'responseRoom':
-                if (data.room != 'error') {
+                if (data.roomName === 'player_already_exist') {
+                    alert("Un jugador con el mismo nombre ya existe");
+                    socket.close();
+                    location.href = "/";
+                    break;
+                }
+
+                if (data.roomName !== 'error') {
+                    console.log(data.roomName);
                     responseFromRoom(data.roomName);
                 } else {
-                    socket.close();
                     alert("Error conectandote al servidor, intentalo más tarde");
+                    socket.close();
+                    location.href = "/";
                 }
                 break;
             case 'countDown':
                 if (data.time != 'error') {
                     handleCountDown(data.time);
                 } else {
-                    socket.close();
                     alert("Error conectandote al servidor, intentalo más tarde");
+                    socket.close();
+                    location.href = "/";
                 }
                 break;
             case 'haveCard':
                 if (data.hand !== 'error') {
                     haveCard(data.hand);
                 } else {
-                    socket.close();
                     alert("Error conectandote al servidor, intentalo más tarde");
+                    socket.close();
+                    location.href = "/";
                 }
                 break;
             case 'turnPlayer':
@@ -101,30 +114,45 @@ function init() {
                     console.log(data.playerTurn);
                     turnPlayer(data.yourTurn, data.playerTurn, data.playersList);
                 } else {
-                    socket.close();
                     alert("Error conectandote al servidor, intentalo más tarde");
+                    socket.close();
+                    location.href = "/";
                 }
                 break;
             case 'sendCard':
                 if (data.cardOnBoard !== 'error') {
                     sendCard(data.cardOnBoard);
                 } else {
-                    socket.close();
                     alert("Error conectandote al servidor, intentalo más tarde");
+                    socket.close();
+                    location.href = "/";
                 }
                 break;
             case 'playerDisconnected':
                 if (data.state !== 'error') {
                     handleDisconection();
                 } else {
+                    alert("Error conectandote al servidor, intentalo más tarde");
                     socket.close();
+                    location.href = "/";
                 }
                 break;
             case 'responseFromPlayedCard':
                 if (data.state !== 'error') {
                     console.log(`>> Response from player: ${data.state}`);
                 } else {
+                    alert("Error conectandote al servidor, intentalo más tarde");
                     socket.close();
+                    location.href = "/";
+                }
+                break;
+            case 'win':
+                if (data.playerWin !== 'error') {
+                    handleWin(data.playerWin);
+                } else {
+                    alert("Error conectandote al servidor, intentalo más tarde");
+                    socket.close();
+                    location.href = "/";
                 }
                 break;
             default:
@@ -145,6 +173,16 @@ function init() {
 
 function handleDisconection() {
     alert("Se ha desconectado un jugador");
+    location.href = "/";
+}
+
+function handleWin(playerWin) {
+    if (playerWin === playerName) {
+        alert("Has ganado");
+    } else {
+        alert("Has perdido")
+    }
+
     location.href = "/";
 }
 
@@ -193,7 +231,13 @@ function haveCard(recivedHand) {
 }
 
 
+//Card colors:
+// rojo: #FF5555
+// azul: #5555FF
+// verde: #55AA55
+// amarillo: #FFAA00
 function turnPlayer(yourTurn, playerTurn, allPlayers) {
+    ctx.clearRect(0, 0, 200, 50);
     turn = yourTurn;
 
     listaUl.innerHTML = '';
@@ -201,14 +245,22 @@ function turnPlayer(yourTurn, playerTurn, allPlayers) {
     allPlayers.forEach(name => {
         const li = document.createElement("li");
 
-        if (name === playerTurn) {
+        let parsedName = name.replace(/\([^)]*\)/g, '').trim();
+        console.log(parsedName);
+
+        if (parsedName === playerTurn) {
             li.textContent = `→ ${name}`;
             li.style.fontWeight = "bold";
         } else {
             li.textContent = name;
         }
 
-        listaUl.appendChild(li);
+        if (parsedName === playerName) {
+            li.style.color = "#10ac84";
+        }
+
+        if (li.textContent !== "")
+            listaUl.appendChild(li);
     });
 }
 
@@ -218,8 +270,8 @@ function sendCard(num) {
 }
 
 function handleCountDown(time) {
-    ctx.clearRect(0, 10, 15, 10);
-    ctx.fillText(time, 0, 20);
+    ctx.clearRect(0, 0, 200, 50);
+    ctx.fillText(`Starting in: ${time}`, 20, 20);
 }
 
 function responseFromRoom(roomName, players) {
@@ -228,9 +280,8 @@ function responseFromRoom(roomName, players) {
     hand = [];
     turn = 0;
     console.log('>> Room Assigned:', room);
-    ctx.fillText(roomName, 0, 10);
+    document.getElementById("room_name").textContent = roomName;
     ctx.drawImage(back, canvas.width - cdWidth / 2 - 60, canvas.height / 2 - cdHeight / 4, cdWidth / 2, cdHeight / 2);
-    ctx.fillText(playerName, 100, 390);
 }
 
 function requestRoom() {
@@ -286,3 +337,11 @@ async function onMouseClick(e) {
 }
 
 init();
+
+dosButton.addEventListener("click", () => {
+    const message = {
+        type: 'dos',
+    };
+    socket.send(JSON.stringify(message));
+    console.log("<< DOS!");
+});
