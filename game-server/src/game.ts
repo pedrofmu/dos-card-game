@@ -316,13 +316,16 @@ function nextTurn(room: Room) {
 
 function startGame(roomName: string): void {
     const room = allRooms[roomName];
-    if (allRooms[roomName].isPlaying) {
+    if (!room)
         return;
-    }
 
-    if (allRooms[roomName].connectedPlayers < 2) {
+    if (allRooms[roomName].isPlaying) 
         return;
-    }
+    
+
+    if (allRooms[roomName].connectedPlayers < 2) 
+        return;
+    
 
     console.log(">> ", roomName, ": starting game");
 

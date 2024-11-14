@@ -13,6 +13,13 @@
     font-weight: 700;
 }
 
+.information_div>h2 {
+    font-family: "Noto Sans", sans-serif;
+    color: var(--platinum);
+    font-size: 30px;
+    font-weight: 900;
+}
+
 .dos_btn {
     margin: 40px;
     width: 150px;

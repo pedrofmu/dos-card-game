@@ -14,7 +14,7 @@ services:
 
   deno:
     build:
-      context: ./api/
+      context: ./game-server/
       dockerfile: Dockerfile
     container_name: deno_server
     ports:
