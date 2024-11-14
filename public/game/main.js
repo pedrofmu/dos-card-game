@@ -63,7 +63,12 @@ function init() {
 
     roomName = getCookie('roomName');
 
-    socket = new WebSocket(`ws://${window.location.host}/api/ws`);
+    try {
+        socket = new WebSocket(`ws://${window.location.host}/api/ws`);
+    }catch{
+        alert("error conectando al servidor, intentalo más tarde");
+        location.href = "/";
+    }
 
     // Cuando se abra la conexión, envía la solicitud de sala
     socket.onopen = function() {
@@ -155,6 +160,15 @@ function init() {
                     location.href = "/";
                 }
                 break;
+            case 'colorChanged':
+                if (data.color !== 'error') {
+                    handleColorChange(data.color);
+                } else {
+                    alert("Error conectandote al servidor, intentalo más tarde");
+                    socket.close();
+                    location.href = "/";
+                }
+                break;
             default:
                 console.error("unsoported messaje: ", data.type);
         }
@@ -174,6 +188,27 @@ function init() {
 function handleDisconection() {
     alert("Se ha desconectado un jugador");
     location.href = "/";
+}
+
+// representa color escogido 1000: rojo, 2000: amarillo, 3000: verde, 4000: azul
+function handleColorChange(color) {
+    switch (color) {
+        case 1000:
+            canvas.style.backgroundColor = '#ff5555';
+            break;
+        case 2000:
+            canvas.style.backgroundColor = '#ffaa00';
+            break;
+        case 3000:
+            canvas.style.backgroundColor = '#55aa55';
+            break;
+        case 4000:
+            canvas.style.backgroundColor = '#5555ff';
+            break;
+        default:
+            console.error(`error with color sent: ${color}`);
+    }
+
 }
 
 function handleWin(playerWin) {
@@ -237,6 +272,7 @@ function haveCard(recivedHand) {
 // verde: #55AA55
 // amarillo: #FFAA00
 function turnPlayer(yourTurn, playerTurn, allPlayers) {
+    canvas.style.backgroundColor = '#10ac84';
     ctx.clearRect(0, 0, 200, 50);
     turn = yourTurn;
 

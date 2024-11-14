@@ -316,16 +316,17 @@ function nextTurn(room: Room) {
 
 function startGame(roomName: string): void {
     const room = allRooms[roomName];
-    if (!room)
+    if (!room) {
         return;
+    }
 
-    if (allRooms[roomName].isPlaying) 
+    if (allRooms[roomName].isPlaying) {
         return;
-    
+    }
 
-    if (allRooms[roomName].connectedPlayers < 2) 
+    if (allRooms[roomName].connectedPlayers < 2) {
         return;
-    
+    }
 
     console.log(">> ", roomName, ": starting game");
 
@@ -585,6 +586,13 @@ function handlePlayCard(
 
     if (choosedColor > 0) {
         room.cardOnBoard = choosedColor;
+        const colorChanged = {
+            type: "colorChanged",
+            color: Math.round(choosedColor),
+        };
+        for (let i = 0; i < room.players.length; i++) {
+            sendWSMsj(clients[room.players[i].id], JSON.stringify(colorChanged));
+        }
     }
 }
 
