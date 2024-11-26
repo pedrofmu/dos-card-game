@@ -29,3 +29,7 @@ if (getCookie("roomName") === null){
 document.getElementById("play_online_btn").addEventListener("click", () => {
      location.href = "/game/game.html";  
 });
+
+document.getElementById("play_with_robots_btn").addEventListener("click", () => {
+     alert("En construcción");  
+});
