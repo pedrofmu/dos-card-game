@@ -1,0 +1,89 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700;900&display=swap");
+
+:root {
+  --jet: #353535ff;
+  --caribbean-current: #3c6e71ff;
+  --platinum: #d9d9d9ff;
+  --indigo-dye: #284b63ff;
+  --white: #ffffffff;
+}
+
+body {
+  background-color: var(--jet);
+  font-family:
+    "Noto Sans",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+}
+
+.brand-title {
+  color: var(--platinum);
+  font-weight: 900;
+}
+
+.brand-icon {
+  width: 25px;
+  transform: rotate(15deg);
+}
+
+.nav-link-dos {
+  color: var(--caribbean-current);
+  font-weight: 900;
+  font-size: 1.25rem;
+  text-decoration: none;
+  transition:
+    color 0.15s ease,
+    text-decoration 0.15s ease;
+}
+
+.nav-link-dos:hover {
+  text-decoration: underline;
+  color: var(--indigo-dye);
+}
+
+.nav-link-dos.active {
+  color: var(--indigo-dye);
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+.btn-dos {
+  background-color: var(--caribbean-current);
+  color: var(--platinum);
+  border-radius: 30px;
+  width: 290px;
+  height: 115px;
+  font-weight: 700;
+  font-size: 1.25rem;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn-dos:hover,
+.btn-dos:focus {
+  background-color: var(--indigo-dye);
+  box-shadow: 5px 5px var(--white);
+  color: var(--platinum);
+}
+
+.footer-icon {
+  width: 50px;
+  height: 50px;
+  background-image: url("./images/meIcon.png");
+  background-size: cover;
+  display: block;
+  transition: filter 0.3s ease-in-out;
+}
+
+.footer-icon:hover {
+  background-image: url("./images/meIconHover.png");
+}

@@ -1,56 +1,115 @@
-main {
-    width: 100%;
-    height: 80%;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700;900&display=swap");
+
+:root {
+  --jet: #353535;
+  --caribbean-current: #3c6e71;
+  --platinum: #d9d9d9;
+  --indigo-dye: #284b63;
+  --white: #ffffff;
 }
 
-.left_main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 50%;
+html,
+body {
+  height: 100%;
 }
 
-.left_main>span {
-    width: 75%;
-    color: var(--platinum);
-    font-size: 17px;
-    font-weight: 400;
-    margin-top: 20px;
+body {
+  min-height: 100vh;
+  background-color: var(--jet);
+  font-family: "Noto Sans", sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
-.left_main>span::before {
-    content: "• ";
-    left: 0;
+/* Header branding and links */
+.header-brand-title {
+  text-decoration: none;
+  color: var(--platinum);
+  font-size: 30px;
+  font-weight: 900;
 }
 
-.right_main {
-    width: 50%;
-    position: relative;
-    display: flex;
-    align-items: center; 
-    justify-content: center; 
+.header-brand-icon {
+  width: 25px;
+  transform: rotate(15deg);
 }
 
-.card {
-    width: 225px; 
-    transition: transform 0.3s;
-    position: absolute;
+.page-link-dos {
+  text-decoration: none;
+  color: var(--caribbean-current);
+  font-size: 1.25rem;
+  font-weight: 900;
+  transition:
+    color 0.15s ease,
+    text-decoration 0.15s ease;
 }
 
-.card1 {
-    transform: rotate(-15deg);
-    top: 220px; 
-    left: 190px;
-    z-index: 2;
+.page-link-dos:hover {
+  text-decoration: underline;
+  color: var(--indigo-dye);
 }
 
-.card2 {
-    transform: rotate(15deg);
-    top: 130px; 
-    left: 340px;  
-    z-index: 1;
+.page-link-active {
+  color: var(--indigo-dye);
+}
+
+/* Main layout */
+.main-layout {
+  min-height: 80vh;
+}
+
+.game-rules {
+  width: 75%;
+  margin-top: 20px;
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--platinum);
+}
+
+.game-rules::before {
+  content: "• ";
+}
+
+/* Cards section */
+.cards-wrapper {
+  position: relative;
+  min-height: 450px;
+}
+
+.rule-card {
+  width: 225px;
+  transition: transform 0.3s;
+  position: absolute;
+}
+
+.rule-card-1 {
+  transform: rotate(-15deg);
+  top: 220px;
+  left: 190px;
+  z-index: 2;
+}
+
+.rule-card-2 {
+  transform: rotate(15deg);
+  top: 130px;
+  left: 340px;
+  z-index: 1;
+}
+
+@media (max-width: 991.98px) {
+  .cards-wrapper {
+    min-height: 320px;
+  }
+
+  .rule-card-1 {
+    top: 180px;
+    left: 50%;
+    transform: translateX(-70%) rotate(-15deg);
+  }
+
+  .rule-card-2 {
+    top: 80px;
+    left: 50%;
+    transform: translateX(-30%) rotate(15deg);
+  }
 }

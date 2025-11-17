@@ -1,48 +1,79 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DOS - CARD GAME</title>
-    <link rel="icon" href="./images/plu4.png" type="image/png">
-    <link rel="stylesheet" href="common-styles.css">
-    <link rel="stylesheet" href="index.css">
-</head>
+    <link rel="icon" href="./images/plu4.png" type="image/png" />
 
-<body>
-    <header>
-        <div class="home_link">
-            <h1>DOS</h1>
-            <img src="./images/change-color.png" alt="page icon">
-        </div>
-        <nav>
-            <a href="/" class="page_link this_page_link">Inicio</a>
-            <a href="reglas/reglas.html" class="page_link">Reglas</a>
-            <a href="/ajustes/ajustes.html" class="page_link">Ajustes</a>
-            <a href="/enviar_sugerencias/enviar_sugerencias.html" class="page_link">Enviar sugerencias</a>
-        </nav>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65"
+      crossorigin="anonymous"
+    />
+
+    <link href="style.css" rel="stylesheet" />
+  </head>
+
+  <body class="d-flex flex-column min-vh-100">
+    <header
+      class="d-flex justify-content-between align-items-center px-4 pt-3 pb-4"
+    >
+      <div class="d-flex align-items-center gap-2">
+        <h1 class="h3 mb-0 brand-title">DOS</h1>
+        <img
+          src="./images/change-color.png"
+          alt="page icon"
+          class="brand-icon"
+        />
+      </div>
+      <nav class="d-flex gap-4">
+        <a href="/" class="nav-link-dos active">Inicio</a>
+        <a href="reglas/reglas.html" class="nav-link-dos">Reglas</a>
+        <a href="/ajustes/ajustes.html" class="nav-link-dos">Ajustes</a>
+      </nav>
     </header>
 
-    <main>
-        <article class="left_main">
-            <h2>DOS</h2>
-            <p>Este es el juego DOS, un juego completamente original, espero lo disfrutes</p>
+    <main class="container flex-grow-1 d-flex align-items-center">
+      <div class="row w-100 align-items-center">
+        <article
+          class="col-md-6 d-flex flex-column align-items-center justify-content-center text-center mb-4 mb-md-0"
+        >
+          <h2 class="display-3 fw-bold text-light mb-4">DOS</h2>
+          <p class="fs-3 fw-semibold text-light" style="max-width: 75%">
+            Este es el juego DOS, un juego completamente original, espero lo
+            disfrutes
+          </p>
         </article>
-        <div class="right_main">
-            <div class="play_btn" id="play_with_robots_btn">
-                <label>CONTRA ROBOTS</label>
-            </div>
-            <div class="play_btn" id="play_online_btn">
-                <label>CONTRA PERSONAS</label>
-            </div>
+
+        <div
+          class="col-md-6 d-flex flex-column align-items-center justify-content-center gap-3"
+        >
+          <button type="button" id="play_with_robots_btn" class="btn btn-dos">
+            CONTRA ROBOTS
+          </button>
+          <button type="button" id="play_online_btn" class="btn btn-dos">
+            CONTRA PERSONAS
+          </button>
         </div>
+      </div>
     </main>
 
-    <footer>
-        <a class="footer_icon" target="_blank" href="https://github.com/pedrofmu/"></a>
+    <footer class="py-3 d-flex justify-content-center align-items-center">
+      <a
+        class="footer-icon"
+        target="_blank"
+        href="https://github.com/pedrofmu/"
+      ></a>
     </footer>
-    <script src="index.js"></script>
-</body>
 
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+      crossorigin="anonymous"
+    ></script>
+    <script src="index.js"></script>
+  </body>
 </html>
