@@ -1,18 +1,12 @@
 /* Page-specific styles for ajustes.html */
+/* Using Bootstrap's py-5 utility instead of custom padding */
 
-main {
-  padding: 5% 0;
-}
-
+/* Using Bootstrap's fw-bold, mb-2, text-uppercase, position-relative, and d-inline-block utilities */
 .settings-label {
   color: var(--accent);
-  font-weight: 700;
   font-size: 1.1rem;
-  margin-bottom: 0.5rem;
-  text-transform: uppercase;
   letter-spacing: 1px;
   position: relative;
-  display: inline-block;
 }
 
 .settings-label::after {
@@ -26,17 +20,10 @@ main {
 }
 
 /* Form container styling */
+/* Using Bootstrap's rounded, p-4, shadow-lg, and border utilities */
 form {
   background-color: rgba(26, 26, 46, 0.5);
-  border-radius: 12px;
-  padding: 2rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(8, 217, 214, 0.1);
   backdrop-filter: blur(5px);
 }
 
-@media (max-width: 767.98px) {
-  form {
-    padding: 1.5rem;
-  }
-}
+/* Using Bootstrap's responsive padding utilities (p-4 p-md-4) instead of media query */

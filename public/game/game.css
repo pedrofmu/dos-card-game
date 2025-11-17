@@ -1,13 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;500;600;700;900&family=Press+Start+2P&display=swap");
 
 :root {
-  /* Import main color scheme from style.css */
-  --dark-bg: #1a1a2e;
-  --primary: #ff2e63;
-  --secondary: #08d9d6;
-  --accent: #f9c80e;
-  --light-text: #eaeaea;
-  --dark-text: #252525;
   --white: #ffffff;
 
   /* RGB versions for opacity control */
@@ -22,18 +15,6 @@
   --board-bg-rgb: 15, 23, 42;       /* #0f172a - slightly darker than dark-bg for contrast */
   --muted-border-rgb: 148, 163, 184;/* #94a3b8 */
   --muted-text-rgb: 226, 232, 240;  /* #e2e8f0 */
-
-  /* Badge colors - using main color scheme */
-  --badge-bg-rgb: var(--secondary-rgb);
-  --badge-border-rgb: var(--secondary-rgb);
-  --badge-text-rgb: var(--dark-text);
-
-  /* Player indicators - using main color scheme */
-  --player-indicator-rgb: var(--secondary-rgb);
-  --player-hover-bg-rgb: var(--primary-rgb);
-  --player-hover-border-rgb: var(--primary-rgb);
-  --player-me-border-rgb: var(--accent-rgb);
-  --player-turn-bg-rgb: var(--primary-rgb);
 
   /* Shadows */
   --neon-shadow: 0 0 10px rgba(var(--secondary-rgb), 0.5), 0 0 20px rgba(var(--secondary-rgb), 0.3);
@@ -461,12 +442,6 @@ body {
   box-shadow: 0 3px 0 rgba(var(--black-rgb), 0.2), 0 0 15px rgba(var(--primary-rgb), 0.3);
   letter-spacing: 0.15em;
   transition-duration: 0.1s;
-}
-
-@keyframes glowing {
-  0% { background-position: 0 0; }
-  50% { background-position: 400% 0; }
-  100% { background-position: 0 0; }
 }
 
 /* Hints & small text */

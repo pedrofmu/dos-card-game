@@ -29,27 +29,27 @@
         />
       </div>
       <nav class="d-flex gap-4">
-        <a href="/" class="nav-link-dos">Inicio</a>
-        <a href="/reglas/reglas.html" class="nav-link-dos">Reglas</a>
-        <a href="/ajustes/ajustes.html" class="nav-link-dos active">Ajustes</a>
+        <a href="/" class="nav-link-dos fw-bold text-decoration-none">Inicio</a>
+        <a href="/reglas/reglas.html" class="nav-link-dos fw-bold text-decoration-none">Reglas</a>
+        <a href="/ajustes/ajustes.html" class="nav-link-dos fw-bold text-decoration-none active">Ajustes</a>
       </nav>
     </header>
 
-    <main class="flex-grow-1">
+    <main class="flex-grow-1 py-5">
       <div class="container">
-        <form class="mt-4">
+        <form class="mt-4 rounded-3 p-3 p-md-4 shadow-lg border border-secondary border-opacity-10">
           <div class="row g-3">
             <div class="col-12 col-md-6 col-lg-4">
               <label
                 for="player_name_input"
-                class="form-label settings-label mb-2"
+                class="form-label settings-label mb-2 fw-bold text-uppercase d-inline-block"
                 >Nombre jugador</label
               >
               <input
                 name="name"
                 type="text"
                 id="player_name_input"
-                class="form-control settings-input"
+                class="form-control settings-input fw-medium rounded"
                 placeholder="Player name"
               />
             </div>
@@ -57,14 +57,14 @@
             <div class="col-12 col-md-6 col-lg-4">
               <label
                 for="room_name_input"
-                class="form-label settings-label mb-2"
+                class="form-label settings-label mb-2 fw-bold text-uppercase d-inline-block"
                 >Nombre de la sala</label
               >
               <input
                 name="email"
                 type="text"
                 id="room_name_input"
-                class="form-control settings-input"
+                class="form-control settings-input fw-medium rounded"
                 placeholder="Room name"
               />
             </div>
@@ -83,7 +83,7 @@
       </div>
     </main>
 
-    <footer class="py-3 d-flex justify-content-center align-items-center">
+    <footer class="py-3 d-flex justify-content-center align-items-center position-relative">
       <a
         class="footer-icon"
         target="_blank"

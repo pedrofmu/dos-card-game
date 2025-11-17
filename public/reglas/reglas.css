@@ -1,19 +1,7 @@
-/* Page-specific styles for reglas.html */
-
-/* Main layout */
-.main-layout {
-  min-height: 80vh;
-}
-
 .game-rules {
-  width: 85%;
-  margin-top: 25px;
-  font-size: 18px;
-  font-weight: 400;
   color: var(--light-text);
   position: relative;
   padding-left: 25px;
-  line-height: 1.6;
 }
 
 .game-rules::before {

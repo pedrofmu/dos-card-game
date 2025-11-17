@@ -22,13 +22,7 @@
   --white-rgb: 255, 255, 255;
 }
 
-/* Base styles */
-html, body {
-  height: 100%;
-}
-
 body {
-  min-height: 100vh;
   background-color: var(--dark-bg);
   background-image: linear-gradient(to bottom, rgba(8, 217, 214, 0.05) 1px, transparent 1px),
                     linear-gradient(to right, rgba(8, 217, 214, 0.05) 1px, transparent 1px);
@@ -55,11 +49,12 @@ body::before {
 }
 
 /* Header and navigation */
+/* Using Bootstrap's position-relative and shadow utilities */
 header {
   background-color: rgba(26, 26, 46, 0.8);
   backdrop-filter: blur(5px);
+  /* Bootstrap has shadow utilities but we keep custom shadow for specific appearance */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  position: relative;
   z-index: 100;
 }
 
@@ -82,11 +77,10 @@ header {
   transform: rotate(30deg) scale(1.1);
 }
 
+/* Using Bootstrap's fw-bold, text-decoration-none, rounded, and position-relative utilities */
 .nav-link-dos {
   color: var(--secondary);
-  font-weight: 700;
   font-size: 1.1rem;
-  text-decoration: none;
   padding: 0.5rem 0.75rem;
   border-radius: 4px;
   transition: all 0.2s ease;
@@ -130,23 +124,18 @@ main {
 }
 
 /* Buttons */
+/* Using Bootstrap's d-flex, align-items-center, justify-content-center, fw-bold, text-uppercase, position-relative */
 .btn-dos {
   background-color: var(--secondary);
   color: var(--dark-text);
   border-radius: 12px;
   width: 290px;
   height: 115px;
-  font-weight: 700;
   font-size: 1.25rem;
   border: 3px solid var(--secondary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
   overflow: hidden;
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
-  text-transform: uppercase;
   letter-spacing: 1px;
 }
 
@@ -192,12 +181,11 @@ main {
 }
 
 /* Form elements */
+/* Using Bootstrap's rounded, fw-medium, and border utilities */
 .form-control.custom-input,
 .settings-input.form-control {
   color: var(--light-text);
-  font-weight: 500;
   font-size: 18px;
-  border-radius: 8px;
   line-height: 22px;
   background-color: rgba(255, 255, 255, 0.05);
   border: 2px solid var(--secondary);
@@ -273,11 +261,11 @@ main {
 }
 
 /* Footer */
+/* Using Bootstrap's position-relative utility */
 footer {
   background-color: rgba(26, 26, 46, 0.8);
   backdrop-filter: blur(5px);
   border-top: 1px solid rgba(8, 217, 214, 0.2);
-  position: relative;
   z-index: 100;
 }
 
