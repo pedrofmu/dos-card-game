@@ -1,57 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700;900&display=swap");
-
-:root {
-  --jet: #353535;
-  --caribbean-current: #3c6e71;
-  --platinum: #d9d9d9;
-  --indigo-dye: #284b63;
-  --white: #ffffff;
-}
-
-html,
-body {
-  height: 100%;
-}
-
-body {
-  min-height: 100vh;
-  background-color: var(--jet);
-  font-family: "Noto Sans", sans-serif;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Header branding and links */
-.header-brand-title {
-  text-decoration: none;
-  color: var(--platinum);
-  font-size: 30px;
-  font-weight: 900;
-}
-
-.header-brand-icon {
-  width: 25px;
-  transform: rotate(15deg);
-}
-
-.page-link-dos {
-  text-decoration: none;
-  color: var(--caribbean-current);
-  font-size: 1.25rem;
-  font-weight: 900;
-  transition:
-    color 0.15s ease,
-    text-decoration 0.15s ease;
-}
-
-.page-link-dos:hover {
-  text-decoration: underline;
-  color: var(--indigo-dye);
-}
-
-.page-link-active {
-  color: var(--indigo-dye);
-}
+/* Page-specific styles for reglas.html */
 
 /* Main layout */
 .main-layout {
@@ -59,38 +6,48 @@ body {
 }
 
 .game-rules {
-  width: 75%;
-  margin-top: 20px;
-  font-size: 17px;
+  width: 85%;
+  margin-top: 25px;
+  font-size: 18px;
   font-weight: 400;
-  color: var(--platinum);
+  color: var(--light-text);
+  position: relative;
+  padding-left: 25px;
+  line-height: 1.6;
 }
 
 .game-rules::before {
-  content: "• ";
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--accent);
+  font-size: 24px;
+  line-height: 1;
 }
 
 /* Cards section */
 .cards-wrapper {
   position: relative;
-  min-height: 450px;
+  min-height: 650px;
+  perspective: 1000px;
 }
 
 .rule-card {
   width: 225px;
-  transition: transform 0.3s;
   position: absolute;
+  transition: all 0.5s ease;
+  border-radius: 12px;
 }
 
 .rule-card-1 {
-  transform: rotate(-15deg);
+  transform: rotate(-15deg) translateZ(20px);
   top: 220px;
   left: 190px;
   z-index: 2;
 }
 
 .rule-card-2 {
-  transform: rotate(15deg);
+  transform: rotate(15deg) translateZ(10px);
   top: 130px;
   left: 340px;
   z-index: 1;
@@ -98,18 +55,7 @@ body {
 
 @media (max-width: 991.98px) {
   .cards-wrapper {
-    min-height: 320px;
-  }
-
-  .rule-card-1 {
-    top: 180px;
-    left: 50%;
-    transform: translateX(-70%) rotate(-15deg);
-  }
-
-  .rule-card-2 {
-    top: 80px;
-    left: 50%;
-    transform: translateX(-30%) rotate(15deg);
+    display: none;
+    visibility: hidden; 
   }
 }

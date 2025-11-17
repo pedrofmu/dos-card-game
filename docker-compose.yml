@@ -1,9 +1,9 @@
 services:
   apache:
-    build: 
+    build:
       context: .
       dockerfile: Dockerfile
-    container_name: apache_server 
+    container_name: apache_server
     ports:
       - "80:80"
     volumes:
@@ -18,7 +18,7 @@ services:
       dockerfile: Dockerfile
     container_name: deno_server
     ports:
-      - "8000:8000"  
+      - "8000:8000"
     networks:
       - webnet
 

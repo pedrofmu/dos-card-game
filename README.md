@@ -16,6 +16,7 @@ Si decides probarlo, ¡espero que disfrutes la experiencia!
 Puedes jugar a DOS Card Game de dos maneras:
 
 ### 1. Acceso Online (en desarrollo)
+
 Estará disponible próximamente.
 
 ### 2. Ejecución Local
@@ -23,6 +24,7 @@ Estará disponible próximamente.
 Para ejecutar el juego localmente en tu equipo, sigue estos pasos:
 
 #### Requisitos previos
+
 Asegúrate de tener **Docker** instalado. Si no lo tienes, puedes seguir las instrucciones en la [documentación oficial de Docker](https://docs.docker.com/engine/install/).
 
 #### Instalación y Ejecución
@@ -31,19 +33,19 @@ Asegúrate de tener **Docker** instalado. Si no lo tienes, puedes seguir las ins
 
    ```bash
    git clone https://github.com/pedrofmu/dos-card-game.git
-    ```
+   ```
 
 2. Acceda a la carpeta del repositorio:
 
-    ```bash
-    cd dos-card-game
-    ```
+   ```bash
+   cd dos-card-game
+   ```
 
 3. Construye y ejecuta el contenedor con Docker:
 
-    ```bash
-    docker compose up --build
-    ```
+   ```bash
+   docker compose up --build
+   ```
 
 4. Una vez que el contenedor esté en ejecución, podrás acceder a la aplicación desde el navegador, usando la dirección IP de tu dispositivo local.
 

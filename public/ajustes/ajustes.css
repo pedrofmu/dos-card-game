@@ -1,133 +1,42 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700;900&display=swap");
-
-:root {
-  /* background */
-  --jet: #353535ff;
-  /* interactive items */
-  --caribbean-current: #3c6e71ff;
-  /* text */
-  --platinum: #d9d9d9ff;
-
-  /* resaltar cosas */
-  --indigo-dye: #284b63ff;
-  --white: #ffffffff;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-}
-
-html,
-body {
-  height: 100%;
-}
-
-body {
-  min-height: 100vh;
-  background-color: var(--jet);
-  font-family: "Noto Sans", sans-serif;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Header & navigation */
-.brand-title {
-  text-decoration: none;
-  color: var(--platinum);
-  font-size: 30px;
-  font-weight: 900;
-}
-
-.brand-icon {
-  width: 25px;
-  transform: rotate(15deg);
-}
-
-.nav-link-custom {
-  text-decoration: none;
-  color: var(--caribbean-current);
-  font-size: 1.25rem;
-  font-weight: 900;
-  padding: 0;
-}
-
-.nav-link-custom:hover {
-  text-decoration: underline;
-  color: var(--indigo-dye);
-}
-
-.nav-link-custom.active {
-  color: var(--indigo-dye);
-}
+/* Page-specific styles for ajustes.html */
 
 main {
   padding: 5% 0;
 }
 
 .settings-label {
-  color: var(--white);
+  color: var(--accent);
   font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  display: inline-block;
 }
 
-.settings-input.form-control {
-  color: var(--white);
-  font-weight: 500;
-  font-size: 18px;
-  border-radius: 5px;
-  line-height: 22px;
-  background-color: transparent;
-  border: 2px solid var(--caribbean-current);
-  transition: all 0.3s;
-  padding: 13px;
-  box-sizing: border-box;
-  outline: 0;
+.settings-label::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 30px;
+  height: 3px;
+  background-color: var(--secondary);
 }
 
-.settings-input.form-control::placeholder {
-  color: var(--platinum);
-  opacity: 0.8;
+/* Form container styling */
+form {
+  background-color: rgba(26, 26, 46, 0.5);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(8, 217, 214, 0.1);
+  backdrop-filter: blur(5px);
 }
 
-.settings-input.form-control:focus {
-  border: 2px solid var(--indigo-dye);
-  box-shadow: none;
-  background-color: transparent;
-  color: var(--white);
-}
-
-.btn-apply {
-  width: 150px;
-  background: var(--caribbean-current);
-  border-radius: 5px;
-  border: 0;
-  cursor: pointer;
-  color: var(--white);
-  font-size: 24px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-  margin-top: -4px;
-  font-weight: 700;
-  transition:
-    background-color 0.2s,
-    box-shadow 0.2s;
-}
-
-.btn-apply:hover {
-  background: var(--indigo-dye);
-  box-shadow: 5px 5px var(--white);
-  color: var(--white);
-}
-
-.footer-icon {
-  width: 50px;
-  height: 50px;
-  background-image: url("../images/meIcon.png");
-  background-size: cover;
-  display: block;
-  transition: filter 0.3s ease-in-out;
-}
-
-.footer-icon:hover {
-  background-image: url("../images/meIconHover.png");
+@media (max-width: 767.98px) {
+  form {
+    padding: 1.5rem;
+  }
 }
