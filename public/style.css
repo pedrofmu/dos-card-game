@@ -53,7 +53,6 @@ body::before {
 header {
   background-color: rgba(26, 26, 46, 0.8);
   backdrop-filter: blur(5px);
-  /* Bootstrap has shadow utilities but we keep custom shadow for specific appearance */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   z-index: 100;
 }
@@ -123,8 +122,6 @@ main {
   flex: 1 0 auto;
 }
 
-/* Buttons */
-/* Using Bootstrap's d-flex, align-items-center, justify-content-center, fw-bold, text-uppercase, position-relative */
 .btn-dos {
   background-color: var(--secondary);
   color: var(--dark-text);
@@ -136,7 +133,6 @@ main {
   overflow: hidden;
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
   transition: all 0.2s ease;
-  letter-spacing: 1px;
 }
 
 .btn-dos::before {
@@ -156,32 +152,12 @@ main {
 
 .btn-dos:hover,
 .btn-dos:focus {
-  transform: translateY(-3px);
   box-shadow: 0 9px 0 rgba(0, 0, 0, 0.2);
   color: var(--dark-text);
   background-color: var(--accent);
   border-color: var(--accent);
 }
 
-.btn-dos:hover::before,
-.btn-dos:focus::before {
-  opacity: 1;
-  animation: glowing 2s linear infinite;
-}
-
-.btn-dos:active {
-  transform: translateY(3px);
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.2);
-}
-
-@keyframes glowing {
-  0% { background-position: 0 0; }
-  50% { background-position: 400% 0; }
-  100% { background-position: 0 0; }
-}
-
-/* Form elements */
-/* Using Bootstrap's rounded, fw-medium, and border utilities */
 .form-control.custom-input,
 .settings-input.form-control {
   color: var(--light-text);
@@ -249,19 +225,6 @@ main {
   color: var(--dark-text);
 }
 
-.btn-apply:hover::before,
-.btn-apply:focus::before {
-  opacity: 1;
-  animation: glowing 2s linear infinite;
-}
-
-.btn-apply:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
-}
-
-/* Footer */
-/* Using Bootstrap's position-relative utility */
 footer {
   background-color: rgba(26, 26, 46, 0.8);
   backdrop-filter: blur(5px);
@@ -287,14 +250,10 @@ footer::before {
   background-size: cover;
   display: block;
   transition: all 0.3s ease-in-out;
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(8, 217, 214, 0.3);
   position: relative;
-  z-index: 2;
 }
 
 .footer-icon:hover {
   background-image: url("./images/meIconHover.png");
   transform: scale(1.1);
-  box-shadow: 0 0 15px rgba(255, 46, 99, 0.5);
 }
