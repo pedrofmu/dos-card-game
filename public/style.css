@@ -1,6 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;700;900&family=Press+Start+2P&display=swap");
 
-/* Color variables - Arcade Game Theme */
 :root {
   /* Main colors */
   --dark-bg: #1a1a2e;
@@ -10,7 +9,6 @@
   --light-text: #eaeaea;
   --dark-text: #252525;
 
-  /* Legacy colors (kept for compatibility) */
   --jet: var(--dark-bg);
   --caribbean-current: var(--secondary);
   --platinum: var(--light-text);
@@ -48,8 +46,6 @@ body::before {
   z-index: 1000;
 }
 
-/* Header and navigation */
-/* Using Bootstrap's position-relative and shadow utilities */
 header {
   background-color: rgba(26, 26, 46, 0.8);
   backdrop-filter: blur(5px);
@@ -76,7 +72,6 @@ header {
   transform: rotate(30deg) scale(1.1);
 }
 
-/* Using Bootstrap's fw-bold, text-decoration-none, rounded, and position-relative utilities */
 .nav-link-dos {
   color: var(--secondary);
   font-size: 1.1rem;
@@ -117,7 +112,6 @@ header {
   background-color: var(--accent);
 }
 
-/* Main content */
 main {
   flex: 1 0 auto;
 }

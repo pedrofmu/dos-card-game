@@ -19,23 +19,25 @@
   </head>
 
   <body class="game-body">
-    <header class="game-header">
-      <div class="container d-flex align-items-center justify-content-between">
-        <div class="d-flex align-items-center gap-2">
-          <div class="game-logo">DOS</div>
-          <div class="d-none d-sm-block">
-            <p class="mb-0 game-header-title">Sala de juego</p>
-            <small class="game-header-subtitle"
-              >Espera a que todos los jugadores estén listos.</small
-            >
-          </div>
-        </div>
-
-        <a href="/" class="btn btn-outline-light btn-sm back-home-btn">
-          ← Volver al inicio
-        </a>
+<header
+      class="d-flex justify-content-between align-items-center px-4 pt-3 pb-4"
+    >
+      <div class="d-flex align-items-center gap-2">
+        <h1 class="h3 mb-0 brand-title">DOS</h1>
+        <img
+          src="../images/change-color.png"
+          alt="page icon"
+          class="brand-icon"
+        />
       </div>
+      <nav class="d-flex gap-4">
+        <a href="/" class="btn btn-outline-light btn-sm back-home-btn">
+          Volver al inicio
+        </a>
+      </nav>
     </header>
+
+        
 
     <main class="game-main">
       <div class="container py-4">
@@ -50,7 +52,7 @@
                 class="game-canvas"
               ></canvas>
 
-              <div class="game-board-footer small text-muted">
+              <div class="game-board-footer small">
                 Toca una carta de tu mano para jugarla o el mazo para robar una
                 carta.
               </div>
@@ -83,8 +85,8 @@
                 ¡DOS!
               </button>
 
-              <p class="game-hint small text-muted mt-2 mb-0">
-                Pulsa <strong>¡DOS!</strong> cuando solo te quede una carta.
+              <p class="game-hint small mt-2 mb-0">
+                Pulsa <strong>¡DOS!</strong> cuando a ti o a otro jugador le queden 2 cartas.
               </p>
             </aside>
           </div>
