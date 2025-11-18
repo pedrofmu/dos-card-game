@@ -124,11 +124,6 @@ body {
   transition: all 0.3s ease;
 }
 
-.game-badge-status:hover {
-  background: rgba(8, 217, 214, 0.2);
-  box-shadow: 0 0 15px rgba(8, 217, 214, 0.3);
-}
-
 .game-divider {
   border-color: rgba(8, 217, 214, 0.2);
   margin: 1rem 0 1.25rem;
@@ -169,24 +164,6 @@ body {
   scrollbar-color: rgba(8, 217, 214, 0.5) rgba(26, 26, 46, 0.3);
 }
 
-.game-players::-webkit-scrollbar {
-  width: 6px;
-}
-
-.game-players::-webkit-scrollbar-track {
-  background: rgba(26, 26, 46, 0.3);
-  border-radius: 10px;
-}
-
-.game-players::-webkit-scrollbar-thumb {
-  background: rgba(8, 217, 214, 0.5);
-  border-radius: 10px;
-}
-
-.game-players::-webkit-scrollbar-thumb:hover {
-  background: rgba(8, 217, 214, 0.7);
-}
-
 .game-players li {
   font-size: 0.95rem;
   padding: 0.5rem 0.75rem;
@@ -212,18 +189,6 @@ body {
   background: rgba(8, 217, 214, 0.8);
   box-shadow: 0 0 8px rgba(8, 217, 214, 0.5);
   transition: all 0.2s ease;
-}
-
-.game-players li:hover {
-  background: rgba(255, 46, 99, 0.15);
-  transform: translateY(-2px) scale(1.02);
-  border-color: rgba(255, 46, 99, 0.4);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15), 0 0 15px rgba(255, 46, 99, 0.2);
-}
-
-.game-players li:hover::before {
-  background: rgba(255, 46, 99, 0.9);
-  box-shadow: 0 0 10px rgba(255, 46, 99, 0.6);
 }
 
 .game-player-me {
