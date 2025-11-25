@@ -352,8 +352,17 @@ function sendCard(num) {
 }
 
 function handleCountDown(time) {
-  ctx.clearRect(0, 0, 200, 50);
-  ctx.fillText(`Starting in: ${time}`, 20, 20);
+    const statusBadge = document.getElementById("status_badge");
+
+ statusBadge.innerText = `Starting in: ${time}`;
+  if (time <= 0) {
+    statusBadge.innerText = `Playing`;
+  }
+
+    statusBadge.style.background = "rgba(8, 217, 214, 0.15)";
+    statusBadge.style.border = "1px solid rgba(8, 217, 214, 0.5)";
+    statusBadge.style.color = "var(--primary)";
+    statusBadge.style.boxShadow = "0 0 10px rgba(8, 217, 214, 0.2)";
 }
 
 function responseFromRoom(roomName) {
@@ -452,4 +461,3 @@ dosButton.addEventListener("click", () => {
   socket.send(JSON.stringify(message));
   console.log("<< DOS!");
 });
-

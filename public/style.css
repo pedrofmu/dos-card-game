@@ -22,8 +22,9 @@
 
 body {
   background-color: var(--dark-bg);
-  background-image: linear-gradient(to bottom, rgba(8, 217, 214, 0.05) 1px, transparent 1px),
-                    linear-gradient(to right, rgba(8, 217, 214, 0.05) 1px, transparent 1px);
+  background-image:
+    linear-gradient(to bottom, rgba(8, 217, 214, 0.05) 1px, transparent 1px),
+    linear-gradient(to right, rgba(8, 217, 214, 0.05) 1px, transparent 1px);
   background-size: 20px 20px;
   font-family:
     "Noto Sans",
@@ -36,13 +37,18 @@ body {
 }
 
 body::before {
-  content: '';
+  content: "";
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   height: 5px;
-  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    var(--secondary),
+    var(--accent)
+  );
   z-index: 1000;
 }
 
@@ -55,7 +61,7 @@ header {
 
 .brand-title {
   color: var(--accent);
-  font-family: 'Press Start 2P', cursive;
+  font-family: "Press Start 2P", cursive;
   font-size: 1.5rem;
   text-shadow: 2px 2px 0 var(--primary);
   letter-spacing: 1px;
@@ -82,7 +88,7 @@ header {
 }
 
 .nav-link-dos::after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -2px;
   left: 0;
@@ -130,14 +136,19 @@ main {
 }
 
 .btn-dos::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -2px;
   left: -2px;
   right: -2px;
   bottom: -2px;
   z-index: -1;
-  background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+  background: linear-gradient(
+    45deg,
+    var(--primary),
+    var(--secondary),
+    var(--accent)
+  );
   background-size: 400%;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -175,7 +186,9 @@ main {
 .form-control.custom-input:focus,
 .settings-input.form-control:focus {
   border: 2px solid var(--primary);
-  box-shadow: 0 0 8px rgba(255, 46, 99, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+  box-shadow:
+    0 0 8px rgba(255, 46, 99, 0.4),
+    inset 0 2px 4px rgba(0, 0, 0, 0.2);
   background-color: rgba(255, 255, 255, 0.08);
   color: var(--light-text);
 }
@@ -196,14 +209,19 @@ main {
 }
 
 .btn-apply::before {
-  content: '';
+  content: "";
   position: absolute;
   top: -2px;
   left: -2px;
   right: -2px;
   bottom: -2px;
   z-index: -1;
-  background: linear-gradient(45deg, var(--primary), var(--secondary), var(--accent));
+  background: linear-gradient(
+    45deg,
+    var(--primary),
+    var(--secondary),
+    var(--accent)
+  );
   background-size: 400%;
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -227,13 +245,18 @@ footer {
 }
 
 footer::before {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+  background: linear-gradient(
+    90deg,
+    var(--primary),
+    var(--secondary),
+    var(--accent)
+  );
   z-index: 1;
 }
 
