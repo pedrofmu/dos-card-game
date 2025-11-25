@@ -15,6 +15,10 @@ const turnPlayerNameEl = document.getElementById("turn_player_name");
 const turnHintEl = document.getElementById("turn_hint");
 const gameBoard = document.querySelector(".game-board");
 
+if (countdownChip) {
+  countdownChip.style.display = "none";
+}
+
 const cdWidth = 240;
 const cdHeight = 360;
 const cards = new Image();
@@ -418,6 +422,10 @@ function handleCountDown(time) {
     statusBadge.classList.remove("badge-live");
     statusBadge.classList.add("badge-waiting");
 
+    if (countdownChip) {
+      countdownChip.style.display = "flex";
+    }
+
     countdownText.textContent = `${remaining}s`;
     const progress = initialCountdown
       ? Math.max(0, Math.min(100, (remaining / initialCountdown) * 100))
@@ -431,6 +439,10 @@ function handleCountDown(time) {
     statusBadge.textContent = "En juego";
     statusBadge.classList.remove("badge-waiting");
     statusBadge.classList.add("badge-live");
+
+    if (countdownChip) {
+      countdownChip.style.display = "none";
+    }
 
     countdownText.textContent = "¡Arrancó!";
     countdownBar.style.width = "100%";

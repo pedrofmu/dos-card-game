@@ -8,7 +8,7 @@ services:
       - "8080:80"
     volumes:
       - ./public:/usr/local/apache2/htdocs
-      - ./apache-virtual-host.conf:/usr/local/apache2/conf/sites/apache-virtual-host.conf
+      - ./.apache/apache-virtual-host.conf:/usr/local/apache2/conf/sites/apache-virtual-host.conf
     networks:
       - webnet
 

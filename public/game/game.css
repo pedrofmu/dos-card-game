@@ -134,6 +134,10 @@ body {
   letter-spacing: 0.5px;
   box-shadow: 0 0 10px rgba(8, 217, 214, 0.2);
   transition: all 0.3s ease;
+  max-width: 100%;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .game-badge-status.badge-waiting {
@@ -163,8 +167,9 @@ body {
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.06);
   border: 1px solid rgba(8, 217, 214, 0.25);
-  min-width: 220px;
-  max-width: 280px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
