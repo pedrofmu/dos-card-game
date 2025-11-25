@@ -6,6 +6,14 @@ const canvas = document.getElementById("game_canvas");
 const ctx = canvas.getContext("2d");
 
 const dosButton = document.getElementById("dos-button");
+const statusBadge = document.getElementById("status_badge");
+const countdownText = document.getElementById("countdown_text");
+const countdownBar = document.getElementById("countdown_bar");
+const countdownChip = document.getElementById("countdown_chip");
+const turnIndicator = document.getElementById("turn_indicator");
+const turnPlayerNameEl = document.getElementById("turn_player_name");
+const turnHintEl = document.getElementById("turn_hint");
+const gameBoard = document.querySelector(".game-board");
 
 const cdWidth = 240;
 const cdHeight = 360;
@@ -20,6 +28,7 @@ let roomName;
 
 let listaUl = document.getElementById("lista-jugadores");
 let allPlayers;
+let initialCountdown = null;
 
 function setCookie(name, value, seconds) {
   let date = new Date();
@@ -304,6 +313,31 @@ function haveCard(recivedHand) {
   }
 }
 
+function updateTurnIndicator(isMyTurn, playerTurnName) {
+  if (!turnIndicator || !turnPlayerNameEl || !turnHintEl) return;
+
+  const cleanedName =
+    playerTurnName && typeof playerTurnName === "string"
+      ? playerTurnName.replace(/\([^)]*\)/g, "").trim()
+      : "";
+
+  turnIndicator.classList.toggle("is-my-turn", isMyTurn);
+  if (gameBoard) {
+    gameBoard.classList.toggle("is-my-turn", isMyTurn);
+  }
+
+  if (isMyTurn) {
+    turnPlayerNameEl.textContent = "¡Tu turno!";
+    turnHintEl.textContent = "Juega una carta o roba del mazo.";
+  } else if (cleanedName) {
+    turnPlayerNameEl.textContent = `Turno de ${cleanedName}`;
+    turnHintEl.textContent = "Espera a que el jugador termine.";
+  } else {
+    turnPlayerNameEl.textContent = "Esperando jugadores...";
+    turnHintEl.textContent = "Te avisaremos cuando puedas jugar.";
+  }
+}
+
 //Card colors:
 // rojo: #FF5555
 // azul: #5555FF
@@ -316,21 +350,40 @@ function turnPlayer(yourTurn, playerTurn, allPlayersList) {
 
   listaUl.innerHTML = "";
 
+  updateTurnIndicator(yourTurn, playerTurn);
+
   allPlayersList.forEach((name) => {
     const li = document.createElement("li");
 
-    let parsedName = name.replace(/\([^)]*\)/g, "").trim();
+    const parsedName = name.replace(/\([^)]*\)/g, "").trim();
     console.log(parsedName);
 
-    if (parsedName === playerTurn) {
-      li.textContent = `→ ${name}`;
-      li.style.fontWeight = "bold";
-    } else {
-      li.textContent = name;
+    li.textContent = name;
+
+    const isMe = parsedName === playerName;
+    const isTurn = parsedName === playerTurn;
+
+    if (isTurn) {
+      li.classList.add("game-player-turn");
     }
 
-    if (parsedName === playerName) {
-      li.style.color = "#10ac84";
+    if (isMe) {
+      li.classList.add("game-player-me");
+    }
+
+    if (isMe || isTurn) {
+      const chip = document.createElement("span");
+      chip.className = "player-status-chip";
+
+      if (isMe && isTurn) {
+        chip.textContent = "Tu turno";
+      } else if (isMe) {
+        chip.textContent = "Tú";
+      } else if (isTurn) {
+        chip.textContent = "Jugando";
+      }
+
+      li.appendChild(chip);
     }
 
     if (li.textContent !== "") listaUl.appendChild(li);
@@ -352,8 +405,42 @@ function sendCard(num) {
 }
 
 function handleCountDown(time) {
-  ctx.clearRect(0, 0, 200, 50);
-  ctx.fillText(`Starting in: ${time}`, 20, 20);
+  if (!statusBadge || !countdownText || !countdownBar) return;
+
+  if (initialCountdown === null && time > 0) {
+    initialCountdown = time;
+  }
+
+  const remaining = Math.max(0, time);
+
+  if (time > 0) {
+    statusBadge.textContent = "Preparando partida";
+    statusBadge.classList.remove("badge-live");
+    statusBadge.classList.add("badge-waiting");
+
+    countdownText.textContent = `${remaining}s`;
+    const progress = initialCountdown
+      ? Math.max(0, Math.min(100, (remaining / initialCountdown) * 100))
+      : 100;
+    countdownBar.style.width = `${progress}%`;
+
+    if (countdownChip) {
+      countdownChip.classList.remove("is-live");
+    }
+  } else {
+    statusBadge.textContent = "En juego";
+    statusBadge.classList.remove("badge-waiting");
+    statusBadge.classList.add("badge-live");
+
+    countdownText.textContent = "¡Arrancó!";
+    countdownBar.style.width = "100%";
+
+    if (countdownChip) {
+      countdownChip.classList.add("is-live");
+    }
+
+    initialCountdown = null;
+  }
 }
 
 function responseFromRoom(roomName) {
@@ -452,4 +539,3 @@ dosButton.addEventListener("click", () => {
   socket.send(JSON.stringify(message));
   console.log("<< DOS!");
 });
-
