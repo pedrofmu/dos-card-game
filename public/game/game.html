@@ -64,12 +64,39 @@
                 class="d-flex justify-content-between align-items-center mb-2"
               >
                 <h2 id="room_name" class="game-room-name mb-0"></h2>
-                <span
-                  class="badge rounded-pill game-badge-status"
-                  id="status_badge"
-                >
-                  Conectando...
-                </span>
+                <div class="d-flex flex-column align-items-end gap-2">
+                  <span
+                    class="badge rounded-pill game-badge-status badge-waiting"
+                    id="status_badge"
+                  >
+                    Conectando...
+                  </span>
+                  <div class="countdown-chip" id="countdown_chip">
+                    <div class="countdown-dot"></div>
+                    <div class="countdown-copy">
+                      <span class="countdown-label">Comienza en</span>
+                      <span class="countdown-time" id="countdown_text">--</span>
+                    </div>
+                    <div class="countdown-bar">
+                      <span id="countdown_bar"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <hr class="game-divider" />
+
+              <div class="turn-indicator" id="turn_indicator">
+                <div class="turn-indicator-pulse"></div>
+                <div class="turn-indicator-text">
+                  <div class="turn-label">Turno</div>
+                  <div class="turn-name" id="turn_player_name">
+                    Esperando jugadores...
+                  </div>
+                  <div class="turn-hint" id="turn_hint">
+                    Te avisaremos cuando puedas jugar.
+                  </div>
+                </div>
               </div>
 
               <hr class="game-divider" />
