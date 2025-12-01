@@ -118,14 +118,15 @@ function init() {
     location.href = "/";
   }
 
-  // Cuando se abra la conexión, envía la solicitud de sala
+  // When the connection opens, send the room request
   socket.onopen = function () {
     requestRoom();
   };
 
-  // Al recibir un mensaje del servidor
+  // When a message is received from the server
   socket.onmessage = function (event) {
     const data = JSON.parse(event.data);
+    console.log(data);
     switch (data.type) {
       case "responseRoom":
         if (data.roomName === "player_already_exist") {
@@ -217,17 +218,26 @@ function init() {
           location.href = "/";
         }
         break;
+      case "dosResponse":
+        if (data.response !== "error") {
+          handleDOSReponse(data.response);
+        } else {
+          alert("Error conectandote al servidor, intentalo más tarde");
+          socket.close();
+          location.href = "/";
+        }
+        break;
       default:
         console.error("unsoported messaje: ", data.type);
     }
   };
 
-  // Al cerrar la conexión
+  // When the connection closes
   socket.onclose = function () {
     console.log(">> Conexión cerrada");
   };
 
-  // Manejo de errores
+  // Error handling
   socket.onerror = function (error) {
     console.error("WebSocket error:", error);
   };
@@ -238,7 +248,7 @@ function handleDisconection() {
   location.href = "/";
 }
 
-// representa color escogido 1000: rojo, 2000: amarillo, 3000: verde, 4000: azul
+// Represents chosen color 1000: red, 2000: yellow, 3000: green, 4000: blue
 function handleColorChange(color) {
   switch (color) {
     case 1000:
@@ -256,6 +266,29 @@ function handleColorChange(color) {
     default:
       console.error(`error with color sent: ${color}`);
   }
+}
+
+function handleDOSReponse(response) {
+    const RESPONSE_TYPES = {
+      SUCCESS: 'success',
+      FORGOT: 'forgot',
+      MISS_CLICK: 'miss',
+    };
+
+
+    switch (response) {
+        case RESPONSE_TYPES.SUCCESS:
+            alert("Enhorabuena por darle al DOS");
+            break;
+        case RESPONSE_TYPES.FORGOT:
+            alert("Se te ha olvidado darle al DOS, chupate 2");           
+            break;
+        case RESPONSE_TYPES.MISS_CLICK:
+             alert("Le has dado a DOS sin necesidad, chupate 2");           
+            break;
+        default:
+            break;
+    }
 }
 
 function handleWin(playerWin) {
@@ -342,11 +375,11 @@ function updateTurnIndicator(isMyTurn, playerTurnName) {
   }
 }
 
-//Card colors:
-// rojo: #FF5555
-// azul: #5555FF
-// verde: #55AA55
-// amarillo: #FFAA00
+// Card colors:
+// red: #FF5555
+// blue: #5555FF
+// green: #55AA55
+// yellow: #FFAA00
 function turnPlayer(yourTurn, playerTurn, allPlayersList) {
   canvas.style.backgroundColor = "#10ac84";
   ctx.clearRect(0, 0, 200, 50);
