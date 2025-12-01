@@ -25,6 +25,19 @@ export interface roomDictionary {
   [key: string]: Room;
 }
 
+const MessageType = {
+  RESPONSE_ROOM: "responseRoom",
+  COUNT_DOWN: "countDown",
+  TURN_PLAYER: "turnPlayer",
+  HAVE_CARD: "haveCard",
+  SEND_CARD: "sendCard",
+  WIN: "win",
+  PLAYER_DISCONNECTED: "playerDisconnected",
+  RESPONSE_FROM_PLAYED_CARD: "responseFromPlayedCard",
+  COLOR_CHANGED: "colorChanged",
+  DOS_RESPONSE: "dosResponse",
+} as const;
+
 const MAX_PEOPLE = 10;
 
 const allRooms: roomDictionary = {};
@@ -175,7 +188,7 @@ function handleRequestRoom(
   for (let i = 0; i < room.players.length; i++) {
     if (room.players[i].name === playerName) {
       const response = {
-        type: "responseRoom",
+        type: MessageType.RESPONSE_ROOM,
         roomName: "player_already_exist",
       };
       sendWSMsj(clients[clientId], JSON.stringify(response));
@@ -195,7 +208,7 @@ function handleRequestRoom(
       `>> User ${playerName} connected to ${roomName} (${room.connectedPlayers}/${MAX_PEOPLE})`,
     );
 
-    const response = { type: "responseRoom", roomName: roomName };
+    const response = { type: MessageType.RESPONSE_ROOM, roomName: roomName };
     sendWSMsj(clients[clientId], JSON.stringify(response));
 
     // Start the timer if there is atleast 2 players
@@ -208,7 +221,7 @@ function handleRequestRoom(
         room.timeout.seconds--;
 
         const countdownResponse = {
-          type: "countDown",
+          type: MessageType.COUNT_DOWN,
           time: room.timeout.seconds,
         };
         for (const player of room.players) {
@@ -227,7 +240,7 @@ function handleRequestRoom(
   }
 
   // On connection fails
-  const errorResponse = { type: "responseRoom", room: "error" };
+  const errorResponse = { type: MessageType.RESPONSE_ROOM, room: "error" };
   sendWSMsj(clients[clientId], JSON.stringify(errorResponse));
   console.log(">> Rooms exceeded or no valid room found");
 }
@@ -250,7 +263,7 @@ function notifyTurn(room: Room) {
   for (let i = 0; i < room.players.length; i++) {
     if (room.players[i].id !== "") {
       const turnPlayerMsj = {
-        type: "turnPlayer",
+        type: MessageType.TURN_PLAYER,
         yourTurn: room.turn === i ? true : false,
         playerTurn: room.players[room.turn].name,
         playersList: room.players.map((player) =>
@@ -265,7 +278,7 @@ function notifyTurn(room: Room) {
 
 function notifyHand(player: Player) {
   const haveCardMsj = {
-    type: "haveCard",
+    type: MessageType.HAVE_CARD,
     hand: player.hand,
   };
 
@@ -273,7 +286,10 @@ function notifyHand(player: Player) {
 }
 
 function notifyCardOnBoard(room: Room) {
-  const cardOnBoardMsj = { type: "sendCard", cardOnBoard: room.cardOnBoard };
+  const cardOnBoardMsj = {
+    type: MessageType.SEND_CARD,
+    cardOnBoard: room.cardOnBoard,
+  };
   for (let i = 0; i < room.players.length; i++) {
     if (room.players[i].id !== "") {
       sendWSMsj(clients[room.players[i].id], JSON.stringify(cardOnBoardMsj));
@@ -282,7 +298,7 @@ function notifyCardOnBoard(room: Room) {
 }
 
 function notifyWin(room: Room, playerWin: Player) {
-  const winMsj = { type: "win", playerWin: playerWin.name };
+  const winMsj = { type: MessageType.WIN, playerWin: playerWin.name };
   for (let i = 0; i < room.players.length; i++) {
     if (room.players[i].id !== "") {
       sendWSMsj(clients[room.players[i].id], JSON.stringify(winMsj));
@@ -318,7 +334,7 @@ function startGame(roomName: string): void {
 
   const deck: number[] = Array.from({ length: 112 }, (_, i) => i);
 
-  //Remove empty cards
+  // Remove empty cards
   deck.splice(56, 1);
   deck.splice(69, 1);
   deck.splice(82, 1);
@@ -397,7 +413,7 @@ function addCardsToPlayer(cuantity: number, player: Player, room: Room) {
 
 function handlePlayerDisconnection(clientID: string): void {
   const playerDisconnected = {
-    type: "playerDisconnected",
+    type: MessageType.PLAYER_DISCONNECTED,
     state: "no_error",
   };
 
@@ -454,9 +470,20 @@ function handleDOS(clientId: string, roomName: string) {
   const player = findPlayer(room, "id", clientId);
   console.log(`>> ${roomName}: DOS!`);
 
+  const RESPONSE_TYPES = {
+    SUCCESS: 'success',
+    FORGOT: 'forgot',
+    MISS_CLICK: 'miss',
+  };
+
   if (player.dos) {
     console.log(`>> ${roomName}: ${player.name} no loger need to say 2`);
     player.dos = false;
+    const responseFromClickedDOS = {
+      type: MessageType.DOS_RESPONSE,
+      response: RESPONSE_TYPES.SUCCESS,
+    };
+    sendWSMsj(clients[clientId], JSON.stringify(responseFromClickedDOS));
     return;
   }
 
@@ -470,9 +497,24 @@ function handleDOS(clientId: string, roomName: string) {
       addCardsToPlayer(2, room.players[i], room);
       notifyHand(room.players[i]);
       room.players[i].dos = false;
+      const responseFromClickedDOS = {
+        type: MessageType.DOS_RESPONSE,
+        response: RESPONSE_TYPES.FORGOT,
+      };
+      sendWSMsj(clients[room.players[i].id], JSON.stringify(responseFromClickedDOS));
       return;
     }
   }
+
+  // the player click DOS without the need to, he gets penalized 
+  console.log(`>> ${roomName}: ${player.name} clicked DOS without the need to`);
+  addCardsToPlayer(2, player, room);
+  notifyHand(player);
+  const responseFromClickedDOS = {
+    type: MessageType.DOS_RESPONSE,
+    response: RESPONSE_TYPES.MISS_CLICK,
+  };
+  sendWSMsj(clients[clientId], JSON.stringify(responseFromClickedDOS));
 }
 
 function handlePlayCard(
@@ -508,7 +550,7 @@ function handlePlayCard(
   ) {
     // RETURN THAT YOU CAN NOT PLAY THIS CARD
     const responseFromPlayedCardMsj = {
-      type: "responseFromPlayedCard",
+      type: MessageType.RESPONSE_FROM_PLAYED_CARD,
       state: "card_not_playable",
     };
 
@@ -546,7 +588,7 @@ function handlePlayCard(
   }
 
   const responseFromPlayedCardMsj = {
-    type: "responseFromPlayedCard",
+    type: MessageType.RESPONSE_FROM_PLAYED_CARD,
     state: "card_played",
   };
 
@@ -569,12 +611,12 @@ function handlePlayCard(
     delete allRooms[roomName];
   }
 
-  if (choosedColor > 0) {
-    room.cardOnBoard = choosedColor;
-    const colorChanged = {
-      type: "colorChanged",
-      color: Math.round(choosedColor),
-    };
+    if (choosedColor > 0) {
+      room.cardOnBoard = choosedColor;
+      const colorChanged = {
+        type: MessageType.COLOR_CHANGED,
+        color: Math.round(choosedColor),
+      };
     for (let i = 0; i < room.players.length; i++) {
       sendWSMsj(clients[room.players[i].id], JSON.stringify(colorChanged));
     }
