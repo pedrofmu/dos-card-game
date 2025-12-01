@@ -1,1 +1,4 @@
 .idea/
+certs/
+.env
+game-server/.env

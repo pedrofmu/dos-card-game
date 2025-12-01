@@ -5,13 +5,12 @@ services:
       dockerfile: Dockerfile
     container_name: apache_server
     ports:
-      - "80:80"
-      - "443:443"
+      - "8080:80"
     volumes:
-      - ./certs:/certs:ro
+      - ./public:/usr/local/apache2/htdocs
+      - ./.apache/apache-virtual-host.conf:/usr/local/apache2/conf/sites/apache-virtual-host.conf
     depends_on:
       - deno
-    restart: unless-stopped
     networks:
       - webnet
 
@@ -20,7 +19,8 @@ services:
       context: ./game-server/
       dockerfile: Dockerfile
     container_name: deno_server
-    restart: unless-stopped
+    env_file:
+      - ./.env
     networks:
       - webnet
 
