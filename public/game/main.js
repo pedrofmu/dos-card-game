@@ -112,7 +112,8 @@ function init() {
   roomName = getCookie("roomName");
 
   try {
-    socket = new WebSocket(`ws://${window.location.host}/api/ws`);
+    const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
+    socket = new WebSocket(`${wsProtocol}://${window.location.host}/api/ws`);
   } catch {
     alert("error conectando al servidor, intentalo más tarde");
     location.href = "/";

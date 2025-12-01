@@ -11,4 +11,4 @@ COPY . /app
 EXPOSE 8000
 
 # Comando para ejecutar tu aplicación
-CMD ["run", "dev"]
+CMD ["deno", "task", "start"]
