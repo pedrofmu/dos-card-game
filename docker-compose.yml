@@ -20,6 +20,8 @@ services:
       context: ./game-server/
       dockerfile: Dockerfile
     container_name: deno_server
+    env_file:
+      - ./.env
     restart: unless-stopped
     networks:
       - webnet

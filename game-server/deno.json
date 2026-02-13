@@ -4,9 +4,9 @@
     "start": "deno serve -A src/main.ts"
   },
   "imports": {
-    "@oak/oak": "jsr:@oak/oak@^17.1.6",
+    "@oak/oak": "jsr:@oak/oak@^17.2.0",
     "@std/assert": "jsr:@std/assert@1.0.15",
     "@std/http": "jsr:@std/http@1.0.21",
-    "@std/path": "jsr:@std/path@^1.1.2"
+    "@std/path": "jsr:@std/path@^1.1.4"
   }
 }
